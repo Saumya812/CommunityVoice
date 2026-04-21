@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CommunityVoice — We're Here to Help</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --surface: #fffdf8;
+    --border: #e2d9c8;
+    --text: #1a1612;
+    --muted: #7a6f62;
+    --accent: #2d6a4f;
+    --accent-light: #d8f3dc;
+    --accent-dark: #1b4332;
+    --user-bg: #2d6a4f;
+    --user-text: #fff;
+    --bot-bg: #fffdf8;
+    --bot-border: #e2d9c8;
+    --danger: #c0392b;
+    --warn: #e67e22;
+    --radius: 14px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 8px rgba(0,0,0,.04);
+  }
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem;
+    color: var(--accent-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .logo-dot {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse-dot 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.35); opacity: 0.65; }
+  }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  #lang-select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    outline: none;
+  }
+  .staff-link {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.18s;
+    background: var(--surface);
+  }
+  .staff-link:hover { background: var(--border); color: var(--text); }
+
+  /* ── Main layout ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 760px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px 16px 0;
+  }
+
+  /* ── Welcome card ── */
+  .welcome {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 30px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .welcome h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.85rem;
+    color: var(--accent-dark);
+    margin-bottom: 8px;
+  }
+  .welcome p { color: var(--muted); font-size: 0.93rem; line-height: 1.65; }
+  .welcome-chips {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .welcome-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── Quick prompts ── */
+  .quick-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .quick-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 0.83rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .quick-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── Chat window ── */
+  #chat-window {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    overflow-y: auto;
+    min-height: 280px;
+    max-height: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scroll-behavior: smooth;
+  }
+  #chat-window::-webkit-scrollbar { width: 4px; }
+  #chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ── Message bubbles ── */
+  .msg {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    animation: fadeUp 0.22s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(7px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .msg.user { flex-direction: row-reverse; }
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .msg.bot .avatar  { background: var(--accent-light); }
+  .msg.user .avatar { background: var(--user-bg); color: #fff; font-size: 0.85rem; font-weight: 600; }
+  .bubble {
+    max-width: 78%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+  .msg.bot .bubble {
+    background: var(--bot-bg);
+    border: 1px solid var(--bot-border);
+    border-top-left-radius: 4px;
+    color: var(--text);
+  }
+  .msg.user .bubble {
+    background: var(--user-bg);
+    color: var(--user-text);
+    border-top-right-radius: 4px;
+  }
+  .bubble p { margin-bottom: 7px; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble strong { font-weight: 600; }
+  .bubble ul, .bubble ol { padding-left: 18px; margin: 5px 0; }
+  .bubble li { margin-bottom: 3px; }
+
+  /* ── Typing indicator ── */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 16px;
+    background: var(--bot-bg);
+    border: 1px solid var(--bot-border);
+    border-radius: 16px;
+    border-top-left-radius: 4px;
+  }
+  .typing-dot {
+    width: 7px; height: 7px;
+    background: var(--muted);
+    border-radius: 50%;
+    animation: bounce 0.9s infinite ease-in-out;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.18s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.36s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+    40% { transform: translateY(-7px); opacity: 1; }
+  }
+
+  /* ── Case confirmed card ── */
+  .case-confirm-card {
+    background: var(--accent-light);
+    border: 1px solid #95d5b2;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 10px;
+    font-size: 0.87rem;
+  }
+  .case-confirm-title {
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+  }
+  .case-confirm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+  }
+  .case-field { display: flex; flex-direction: column; gap: 2px; }
+  .case-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .case-value { font-weight: 500; color: var(--text); }
+  .case-summary-text {
+    margin-top: 10px;
+    font-size: 0.84rem;
+    color: var(--muted);
+    font-style: italic;
+    border-top: 1px solid #95d5b2;
+    padding-top: 8px;
+    line-height: 1.5;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 0.77rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge-high   { background: #fde8e8; color: var(--danger); }
+  .badge-medium { background: #fef3e2; color: var(--warn); }
+  .badge-low    { background: var(--accent-light); color: var(--accent-dark); }
+  .need-tag {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: #e8f5ff;
+    color: #1a5c8a;
+    border: 1px solid #bfdbfe;
+  }
+
+  /* ── Referrals ── */
+  .referrals { margin-top: 12px; }
+  .referrals-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .referral-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+  .referral-item:last-child { border-bottom: none; }
+  .referral-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .referral-type { font-weight: 600; font-size: 0.87rem; color: var(--text); margin-bottom: 2px; }
+  .referral-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+
+  /* ── Input area ── */
+  .input-area {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 14px 0 20px;
+  }
+  #user-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 11px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.93rem;
+    color: var(--text);
+    resize: none;
+    outline: none;
+    min-height: 44px;
+    max-height: 130px;
+    line-height: 1.5;
+    transition: border-color 0.15s;
+  }
+  #user-input:focus { border-color: var(--accent); }
+  #user-input::placeholder { color: var(--muted); }
+
+  .icon-btn {
+    width: 44px; height: 44px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    font-size: 1.15rem;
+  }
+  #voice-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  #voice-btn:hover { background: var(--border); }
+  #voice-btn.recording {
+    background: #fde8e8;
+    border-color: var(--danger);
+    animation: mic-pulse 1.1s infinite;
+  }
+  @keyframes mic-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,.35); }
+    50%       { box-shadow: 0 0 0 9px rgba(192,57,43,0); }
+  }
+  #send-btn {
+    background: var(--accent);
+    color: #fff;
+  }
+  #send-btn:hover { background: var(--accent-dark); }
+  #send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  #send-btn svg { width: 18px; height: 18px; }
+
+  .voice-status {
+    font-size: 0.78rem;
+    color: var(--danger);
+    display: none;
+    align-items: center;
+    gap: 5px;
+    padding: 0 4px;
+    white-space: nowrap;
+  }
+  .voice-status.show { display: flex; }
+  .voice-dot { width: 7px; height: 7px; background: var(--danger); border-radius: 50%; animation: pulse-dot 0.9s infinite; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 12px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+    background: var(--surface);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 520px) {
+    .welcome { padding: 20px 18px; }
+    .welcome h1 { font-size: 1.5rem; }
+    .case-confirm-grid { grid-template-columns: 1fr; }
+    .quick-row { gap: 6px; }
+    #chat-window { max-height: 360px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">
+    <div class="logo-dot"></div>
+    CommunityVoice
+  </a>
+  <div class="header-right">
+    <select id="lang-select" title="Change language">
+      <option value="en">🌐 English</option>
+      <option value="es">🌐 Español</option>
+      <option value="fr">🌐 Français</option>
+      <option value="zh">🌐 中文</option>
+      <option value="ar">🌐 العربية</option>
+    </select>
+    <a href="/staff/login" class="staff-link">Staff Portal →</a>
+  </div>
+</header>
+
+<div class="main">
+  <div class="welcome">
+    <h1>We're Here to Help</h1>
+    <p>Talk with our AI assistant to find the support you need. Your information is kept private and a real staff member will follow up with you.</p>
+    <div class="welcome-chips">
+      <span class="welcome-chip">🔒 Private & Confidential</span>
+      <span class="welcome-chip">🌍 5 Languages Supported</span>
+      <span class="welcome-chip">🕐 Available 24/7</span>
+      <span class="welcome-chip">🎤 Voice Input Supported</span>
+    </div>
+  </div>
+
+  <div class="quick-row" id="quick-row">
+    <button class="quick-btn" data-msg="I need help with food or groceries">🥗 Food assistance</button>
+    <button class="quick-btn" data-msg="I need help finding housing or shelter">🏠 Housing & shelter</button>
+    <button class="quick-btn" data-msg="I need help paying my utility bills">💡 Utilities help</button>
+    <button class="quick-btn" data-msg="I need medical or health support">🏥 Medical help</button>
+    <button class="quick-btn" data-msg="I need help finding a job">💼 Job assistance</button>
+    <button class="quick-btn" data-msg="I need mental health support">🧠 Mental health</button>
+  </div>
+
+  <div id="chat-window"></div>
+
+  <div class="input-area">
+    <span class="voice-status" id="voice-status"><span class="voice-dot"></span> Listening…</span>
+    <button class="icon-btn" id="voice-btn" title="Click to speak">🎤</button>
+    <textarea id="user-input" placeholder="Describe what you need — we're here to help…" rows="1"></textarea>
+    <button class="icon-btn" id="send-btn" title="Send message">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<footer>
+  CommunityVoice &mdash; Powered by Gemini AI &amp; Firebase &mdash; GDG Solution Challenge 2026
+</footer>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let sessionId = null;
+  let isWaiting = false;
+  let isRecording = false;
+  let voicePendingSend = false;
+  let recognition = null;
+
+  const chatWindow  = document.getElementById('chat-window');
+  const userInput   = document.getElementById('user-input');
+  const sendBtn     = document.getElementById('send-btn');
+  const voiceBtn    = document.getElementById('voice-btn');
+  const voiceStatus = document.getElementById('voice-status');
+  const langSelect  = document.getElementById('lang-select');
+  const quickRow    = document.getElementById('quick-row');
+
+  // ── Auto-resize textarea ───────────────────────────────────────────────────
+  userInput.addEventListener('input', () => {
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 130) + 'px';
+  });
+
+  // ── Keyboard shortcut: Enter to send ──────────────────────────────────────
+  userInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  sendBtn.addEventListener('click', sendMessage);
+
+  // ── Quick-prompt buttons ───────────────────────────────────────────────────
+  quickRow.querySelectorAll('.quick-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      userInput.value = btn.dataset.msg;
+      quickRow.style.display = 'none';
+      sendMessage();
+    });
+  });
+
+  // ── Scroll helper ──────────────────────────────────────────────────────────
+  function scrollBottom() {
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  // ── Text formatting ────────────────────────────────────────────────────────
+  function formatBotText(text) {
+    let html = text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>');
+    const lines = html.split('\n');
+    const out = [];
+    let inList = false;
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (/^[-•]\s+/.test(trimmed)) {
+        if (!inList) { out.push('<ul>'); inList = true; }
+        out.push(`<li>${trimmed.replace(/^[-•]\s+/,'')}</li>`);
+      } else {
+        if (inList) { out.push('</ul>'); inList = false; }
+        if (trimmed) out.push(`<p>${trimmed}</p>`);
+      }
+    }
+    if (inList) out.push('</ul>');
+    return out.join('');
+  }
+
+  function getNeedTagStyle(need) {
+    const colors = {
+      food_assistance:  '#e8f5ff;color:#1a5c8a;border:1px solid #bfdbfe',
+      housing_shelter:  '#fef3c7;color:#92400e;border:1px solid #fde68a',
+      utilities_help:   '#fffbeb;color:#b45309;border:1px solid #fcd34d',
+      medical_health:   '#fce7f3;color:#9d174d;border:1px solid #fbcfe8',
+      job_assistance:   '#ede9fe;color:#5b21b6;border:1px solid #ddd6fe',
+      mental_health:    '#e0f2fe;color:#0c4a6e;border:1px solid #bae6fd',
+      legal_aid:        '#ecfdf5;color:#065f46;border:1px solid #6ee7b7',
+      childcare:        '#fff7ed;color:#9a3412;border:1px solid #fed7aa',
+      transportation:   '#f0fdf4;color:#14532d;border:1px solid #86efac',
+    };
+    return `background:${colors[need] || '#f0ede8;color:#7a6f62;border:1px solid #e2d9c8'}`;
+  }
+
+  function getReferralIcon(type) {
+    if (!type) return '📌';
+    const t = type.toLowerCase();
+    if (t.includes('food') || t.includes('pantry') || t.includes('meal')) return '🥗';
+    if (t.includes('hous') || t.includes('shelter') || t.includes('rent')) return '🏠';
+    if (t.includes('util') || t.includes('electric') || t.includes('energy')) return '💡';
+    if (t.includes('health') || t.includes('medical') || t.includes('clinic')) return '🏥';
+    if (t.includes('job') || t.includes('employ') || t.includes('work')) return '💼';
+    if (t.includes('mental') || t.includes('counsel') || t.includes('therapy')) return '🧠';
+    if (t.includes('legal') || t.includes('law')) return '⚖️';
+    if (t.includes('child') || t.includes('youth')) return '👶';
+    if (t.includes('transit') || t.includes('transport') || t.includes('bus')) return '🚌';
+    return '📋';
+  }
+
+  // ── Add message to chat ────────────────────────────────────────────────────
+  function addMessage(role, text, extras = {}) {
+    const msg = document.createElement('div');
+    msg.className = `msg ${role}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = role === 'bot' ? '💬' : '👤';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+
+    if (role === 'bot') {
+      bubble.innerHTML = formatBotText(text);
+
+      if (extras.resolution && extras.resolution.resolved) {
+        const r = extras.resolution;
+        const det = r.resolution_details || {};
+        bubble.innerHTML += `
+          <div class="case-confirm-card" style="background:#f0fdf4;border-color:#86efac">
+            <div class="case-confirm-title" style="color:#14532d">✦ Resource automatically allocated</div>
+            <div style="font-size:13px;color:#065f46;line-height:1.6">${escHtml(r.action_taken)}</div>
+          </div>`;
+      }
+
+      if (extras.case_data) {
+        const cd = extras.case_data;
+        const urgency = cd.urgency || 'low';
+        const needLabel = (cd.need_type || 'other').replace(/_/g,' ');
+        bubble.innerHTML += `
+          <div class="case-confirm-card">
+            <div class="case-confirm-title">✅ Your request has been logged</div>
+            <div class="case-confirm-grid">
+              <div class="case-field">
+                <span class="case-label">Name</span>
+                <span class="case-value">${escHtml(cd.name || '—')}</span>
+              </div>
+              <div class="case-field">
+                <span class="case-label">Need Type</span>
+                <span class="case-value"><span class="need-tag" style="${getNeedTagStyle(cd.need_type)}">${escHtml(needLabel)}</span></span>
+              </div>
+              <div class="case-field">
+                <span class="case-label">Urgency</span>
+                <span class="case-value"><span class="badge badge-${urgency}">${urgency}</span></span>
+              </div>
+              <div class="case-field">
+                <span class="case-label">Follow-up</span>
+                <span class="case-value">${cd.follow_up_needed ? '✓ Yes' : 'No'}</span>
+              </div>
+            </div>
+            ${cd.summary ? `<div class="case-summary-text">"${escHtml(cd.summary)}"</div>` : ''}
+          </div>`;
+      }
+
+      if (extras.referrals && extras.referrals.length) {
+        let refHtml = `<div class="referrals"><div class="referrals-title">📋 Suggested Resources</div>`;
+        extras.referrals.forEach(r => {
+          refHtml += `
+            <div class="referral-item">
+              <span class="referral-icon">${getReferralIcon(r.type)}</span>
+              <div>
+                <div class="referral-type">${escHtml(r.type)}</div>
+                <div class="referral-desc">${escHtml(r.description)}</div>
+              </div>
+            </div>`;
+        });
+        refHtml += `</div>`;
+        bubble.innerHTML += refHtml;
+      }
+    } else {
+      bubble.textContent = text;
+    }
+
+    msg.appendChild(avatar);
+    msg.appendChild(bubble);
+    chatWindow.appendChild(msg);
+    scrollBottom();
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function showTyping() {
+    const el = document.createElement('div');
+    el.className = 'msg bot';
+    el.id = 'typing-indicator';
+    el.innerHTML = `
+      <div class="avatar">💬</div>
+      <div class="typing-indicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>`;
+    chatWindow.appendChild(el);
+    scrollBottom();
+  }
+
+  function hideTyping() {
+    const el = document.getElementById('typing-indicator');
+    if (el) el.remove();
+  }
+
+  // ── Send message ───────────────────────────────────────────────────────────
+  async function sendMessage() {
+    const text = userInput.value.trim();
+    if (!text || isWaiting) return;
+
+    quickRow.style.display = 'none';
+    addMessage('user', text);
+    userInput.value = '';
+    userInput.style.height = 'auto';
+    isWaiting = true;
+    sendBtn.disabled = true;
+    showTyping();
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          session_id: sessionId,
+          language: langSelect.value
+        })
+      });
+      const data = await res.json();
+
+      hideTyping();
+      if (data.error) {
+        addMessage('bot', '⚠️ Something went wrong. Please try again in a moment.');
+        console.error('API error:', data.error);
+      } else {
+        sessionId = data.session_id;
+        addMessage('bot', data.reply, {
+          case_data: data.case_data,
+          referrals: data.referrals,
+          resolution: data.resolution
+        });
+      }
+    } catch (err) {
+      hideTyping();
+      addMessage('bot', '⚠️ Connection error. Please check your connection and try again.');
+      console.error(err);
+    }
+
+    isWaiting = false;
+    sendBtn.disabled = false;
+    userInput.focus();
+  }
+
+  // ── Voice input (fixed: separate flag for final result) ────────────────────
+  function getLangCode() {
+    const map = { en:'en-US', es:'es-ES', fr:'fr-FR', zh:'zh-CN', ar:'ar-SA' };
+    return map[langSelect.value] || 'en-US';
+  }
+
+  function setupVoice() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      voiceBtn.title = 'Voice input not supported — use Chrome or Edge';
+      voiceBtn.disabled = true;
+      voiceBtn.style.opacity = '0.3';
+      return;
+    }
+
+    voiceBtn.addEventListener('click', () => {
+      if (isRecording) { recognition && recognition.stop(); return; }
+
+      recognition = new SR();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = getLangCode();
+      voicePendingSend = false;
+
+      recognition.onstart = () => {
+        isRecording = true;
+        voiceBtn.classList.add('recording');
+        voiceStatus.classList.add('show');
+        userInput.value = '';
+      };
+
+      recognition.onresult = e => {
+        let interim = '', finalText = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const t = e.results[i][0].transcript;
+          if (e.results[i].isFinal) { finalText += t; voicePendingSend = true; }
+          else interim += t;
+        }
+        userInput.value = finalText || interim;
+        userInput.style.height = 'auto';
+        userInput.style.height = Math.min(userInput.scrollHeight, 130) + 'px';
+      };
+
+      recognition.onend = () => {
+        isRecording = false;
+        voiceBtn.classList.remove('recording');
+        voiceStatus.classList.remove('show');
+        if (voicePendingSend && userInput.value.trim()) {
+          voicePendingSend = false;
+          setTimeout(sendMessage, 120);
+        }
+      };
+
+      recognition.onerror = e => {
+        isRecording = false;
+        voicePendingSend = false;
+        voiceBtn.classList.remove('recording');
+        voiceStatus.classList.remove('show');
+        if (e.error === 'not-allowed')
+          addMessage('bot', '🎤 Microphone access was denied. Please allow microphone permissions in your browser settings, then try again.');
+        else if (e.error !== 'no-speech')
+          console.warn('Voice error:', e.error);
+      };
+
+      try { recognition.start(); } catch(e) { console.warn('Could not start voice:', e); }
+    });
+  }
+
+  // ── Language change: reset session cleanly ─────────────────────────────────
+  const greetings = {
+    en: "Hello! 👋 Welcome to CommunityVoice. I'm here to help connect you with the support you need — whether it's food, housing, medical care, or something else.\n\nCould you start by telling me your first name and what's going on?",
+    es: "¡Hola! 👋 Bienvenido/a a CommunityVoice. Estoy aquí para ayudarle a encontrar el apoyo que necesita — ya sea alimentos, vivienda, atención médica u otra cosa.\n\n¿Puede decirme su nombre y contarme un poco sobre su situación?",
+    fr: "Bonjour! 👋 Bienvenue sur CommunityVoice. Je suis ici pour vous aider à trouver le soutien dont vous avez besoin — que ce soit pour la nourriture, le logement, les soins médicaux ou autre chose.\n\nPourriez-vous me dire votre prénom et m'expliquer votre situation?",
+    zh: "你好！👋 欢迎来到 CommunityVoice。我在这里帮助您找到所需的支持——无论是食物、住房、医疗还是其他方面。\n\n能告诉我您的名字以及您目前的情况吗？",
+    ar: "مرحباً! 👋 أهلاً بك في CommunityVoice. أنا هنا لمساعدتك في إيجاد الدعم الذي تحتاجه — سواء كان طعاماً أو مسكناً أو رعاية طبية أو غير ذلك.\n\nهل يمكنك إخباري باسمك الأول وشرح وضعك؟",
+  };
+
+  langSelect.addEventListener('change', () => {
+    sessionId = null;
+    chatWindow.innerHTML = '';
+    quickRow.style.display = 'flex';
+    addMessage('bot', greetings[langSelect.value] || greetings.en);
+  });
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  setupVoice();
+  addMessage('bot', greetings.en);
+  userInput.focus();
+</script>
+</body>
+</html>
