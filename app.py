@@ -13,14 +13,10 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "communityvoice-dev-secret-2026")
 
 # ── Gemini ─────────────────────────────────────────────────────────────────────
-#GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY_HERE")
-#client = genai.Client(api_key=GEMINI_API_KEY)
-#GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY_HERE")
+client = genai.Client(api_key=GEMINI_API_KEY)
+GEMINI_MODEL = "gemini-1.5-flash"
 
-#----- Groq (optional alternative AI provider)
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-groq_client = Groq(api_key=GROQ_API_KEY)
-GROQ_MODEL = "llama-3.1-70b-versatile"
 
 # ── Staff credentials ──────────────────────────────────────────────────────────
 STAFF_USERNAME = os.environ.get("STAFF_USERNAME", "staff")

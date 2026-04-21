@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CommunityVoice — Staff Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0d14;--surface:#131720;--surface2:#191e2d;--border:rgba(255,255,255,0.07);
+    --accent:#4fd1a5;--accent2:#7b9ef4;--text:#e2e4ec;--muted:#5a6070;
+    --high:#f87171;--med:#fbbf24;--low:#4fd1a5;
+  }
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 40% 30% at 10% 5%,rgba(79,209,165,0.05) 0%,transparent 50%);pointer-events:none}
+
+  /* Sidebar */
+  .layout{display:flex;min-height:100vh}
+  .sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:2rem}
+  .sidebar-logo{display:flex;align-items:center;gap:.6rem}
+  .sidebar-logo .icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .sidebar-logo h2{font-family:'Fraunces',serif;font-size:1rem;font-weight:500}
+  .sidebar-logo h2 span{color:var(--accent)}
+  nav a{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border-radius:8px;text-decoration:none;color:var(--muted);font-size:.85rem;transition:all .15s;margin-bottom:.25rem}
+  nav a:hover,nav a.active{background:rgba(79,209,165,.08);color:var(--accent)}
+  .intake-btn{margin-top:auto;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:10px;padding:.65rem 1rem;font-size:.85rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;text-align:center;text-decoration:none;display:block}
+
+  /* Main */
+  .main{flex:1;padding:2rem;overflow-y:auto}
+  .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem}
+  .top-bar h1{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:500;letter-spacing:-.02em}
+  .refresh-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+  .refresh-btn:hover{color:var(--text);border-color:var(--accent)}
+
+  /* Stats */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:2rem}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.4rem}
+  .stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+  .stat-value{font-size:1.8rem;font-family:'Fraunces',serif;font-weight:500;line-height:1}
+  .stat-value.high{color:var(--high)}.stat-value.med{color:var(--med)}.stat-value.ok{color:var(--low)}
+
+  /* Filters */
+  .filters{display:flex;gap:.5rem;margin-bottom:1.25rem;flex-wrap:wrap}
+  .filter-btn{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:.3rem .8rem;font-size:.78rem;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
+  .filter-btn:hover,.filter-btn.active{background:rgba(79,209,165,.1);border-color:var(--accent);color:var(--accent)}
+
+  /* Cases */
+  .cases-grid{display:flex;flex-direction:column;gap:.75rem}
+  .case-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;display:flex;align-items:flex-start;gap:1.25rem;transition:border-color .2s;animation:fadeUp .3s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .case-card:hover{border-color:rgba(79,209,165,.2)}
+  .urgency-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px}
+  .case-body{flex:1}
+  .case-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem;flex-wrap:wrap}
+  .case-name{font-weight:500;font-size:.95rem}
+  .case-need{font-size:.75rem;background:rgba(123,158,244,.12);color:var(--accent2);padding:.15rem .55rem;border-radius:10px}
+  .case-time{font-size:.72rem;color:var(--muted);margin-left:auto}
+  .case-summary{font-size:.83rem;color:var(--muted);line-height:1.5;margin-bottom:.75rem}
+  .case-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+  .action-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:.25rem .7rem;font-size:.75rem;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s}
+  .action-btn:hover{color:var(--text);border-color:var(--accent)}
+  .action-btn.done{background:rgba(79,209,165,.1);border-color:rgba(79,209,165,.3);color:var(--accent)}
+  .status-badge{font-size:.7rem;padding:.15rem .55rem;border-radius:8px;font-weight:500}
+  .status-new{background:rgba(248,113,113,.12);color:var(--high)}
+  .status-in_progress{background:rgba(251,191,36,.12);color:var(--med)}
+  .status-resolved{background:rgba(79,209,165,.12);color:var(--low)}
+
+  .empty-state{text-align:center;padding:4rem 1rem;color:var(--muted)}
+  .empty-icon{font-size:3rem;margin-bottom:1rem;opacity:.4}
+  .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-wrap{text-align:center;padding:3rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="icon">🤝</div>
+      <h2>Community<span>Voice</span></h2>
+    </div>
+    <nav>
+      <a href="/dashboard" class="active">📋 Cases</a>
+      <a href="/">🌐 Intake Portal</a>
+    </nav>
+    <a href="/" class="intake-btn">Open Intake Chat →</a>
+  </aside>
+
+  <main class="main">
+    <div class="top-bar">
+      <h1>Case Dashboard</h1>
+      <button class="refresh-btn" onclick="loadCases()">↻ Refresh</button>
+    </div>
+
+    <div class="stats" id="stats">
+      <div class="stat"><div class="stat-label">Total Cases</div><div class="stat-value ok" id="stat-total">—</div></div>
+      <div class="stat"><div class="stat-label">High Urgency</div><div class="stat-value high" id="stat-high">—</div></div>
+      <div class="stat"><div class="stat-label">Open</div><div class="stat-value med" id="stat-open">—</div></div>
+      <div class="stat"><div class="stat-label">Resolved</div><div class="stat-value ok" id="stat-resolved">—</div></div>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('new',this)">🔴 New</button>
+      <button class="filter-btn" onclick="setFilter('in_progress',this)">🟡 In Progress</button>
+      <button class="filter-btn" onclick="setFilter('resolved',this)">🟢 Resolved</button>
+      <button class="filter-btn" onclick="setFilter('high',this)">⚡ High Urgency</button>
+    </div>
+
+    <div class="cases-grid" id="casesGrid">
+      <div class="loading-wrap"><div class="spinner"></div></div>
+    </div>
+  </main>
+</div>
+
+<script>
+let allCases=[];
+let activeFilter='all';
+
+async function loadCases(){
+  const grid=document.getElementById('casesGrid');
+  grid.innerHTML='<div class="loading-wrap"><div class="spinner"></div></div>';
+  try{
+    const res=await fetch('/api/cases');
+    allCases=await res.json();
+    updateStats();
+    renderCases();
+  }catch(e){
+    grid.innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div><p>Could not load cases. Is the server running?</p></div>';
+  }
+}
+
+function updateStats(){
+  document.getElementById('stat-total').textContent=allCases.length;
+  document.getElementById('stat-high').textContent=allCases.filter(c=>c.urgency==='high').length;
+  document.getElementById('stat-open').textContent=allCases.filter(c=>c.status!=='resolved').length;
+  document.getElementById('stat-resolved').textContent=allCases.filter(c=>c.status==='resolved').length;
+}
+
+function setFilter(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCases();
+}
+
+function renderCases(){
+  const grid=document.getElementById('casesGrid');
+  let cases=allCases;
+  if(activeFilter==='high') cases=cases.filter(c=>c.urgency==='high');
+  else if(activeFilter!=='all') cases=cases.filter(c=>c.status===activeFilter);
+
+  if(!cases.length){
+    grid.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><p>No cases match this filter.</p></div>';
+    return;
+  }
+  grid.innerHTML=cases.map(c=>caseCard(c)).join('');
+}
+
+function caseCard(c){
+  const urgencyColor={high:'var(--high)',medium:'var(--med)',low:'var(--low)'}[c.urgency]||'var(--muted)';
+  const statusClass=`status-${(c.status||'new').replace(' ','_')}`;
+  const statusLabel={new:'New',in_progress:'In Progress',resolved:'Resolved'}[c.status]||c.status||'New';
+  const time=c.timestamp?new Date(c.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'—';
+  return `
+  <div class="case-card" id="card-${c.id}">
+    <div class="urgency-dot" style="background:${urgencyColor}"></div>
+    <div class="case-body">
+      <div class="case-header">
+        <span class="case-name">${escHtml(c.name||'Anonymous')}</span>
+        <span class="case-need">${escHtml(c.need_type||'general')}</span>
+        <span class="status-badge ${statusClass}">${statusLabel}</span>
+        <span class="case-time">${time}</span>
+      </div>
+      <div class="case-summary">${escHtml(c.summary||'No summary available.')}</div>
+      <div class="case-actions">
+        <button class="action-btn" onclick="updateStatus('${c.id}','in_progress')">🟡 In Progress</button>
+        <button class="action-btn done" onclick="updateStatus('${c.id}','resolved')">✅ Resolved</button>
+        ${c.follow_up_needed?'<span class="action-btn" style="color:var(--high);border-color:rgba(248,113,113,.3)">⚠️ Follow-up needed</span>':''}
+      </div>
+    </div>
+  </div>`;
+}
+
+async function updateStatus(id,status){
+  try{
+    await fetch(`/api/cases/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
+    const c=allCases.find(x=>x.id===id);
+    if(c){c.status=status;updateStats();renderCases();}
+  }catch(e){alert('Could not update case status.');}
+}
+
+function escHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+loadCases();
+setInterval(loadCases, 30000); // auto-refresh every 30s
+</script>
+</body>
+</html>
