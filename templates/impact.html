@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CommunityVoice — Impact</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--green:#0a2e1e;--green-mid:#1a5c3a;--green-lt:#2ecc8f;--cream:#faf8f3;--bg:#f4f1ea;--border:#e5e0d5;--text:#1a1a2e;--muted:#8a8585;--red:#e84855;--amber:#f5a623;--sidebar-w:240px;--radius:14px;--shadow:0 2px 14px rgba(10,46,30,.09)}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow:hidden}
+    .sidebar{width:var(--sidebar-w);background:var(--cream);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 16px;position:fixed;top:0;left:0;bottom:0;z-index:100}
+    .logo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+    .logo-icon{width:36px;height:36px;background:var(--green-lt);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px}
+    .logo-icon svg{width:100%;height:100%}
+    .logo-name{font-size:15px;font-weight:600;color:var(--text)}.logo-name em{font-style:italic;color:var(--green-mid)}
+    .nav-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+    nav{display:flex;flex-direction:column;gap:2px}
+    nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none;transition:all .18s}
+    nav a:hover{background:var(--bg);color:var(--text)}
+    nav a.active{background:var(--green);color:#fff}
+    .nav-dot{width:6px;height:6px;border-radius:50%;background:transparent;margin-left:auto}
+    nav a.active .nav-dot{background:var(--green-lt)}
+    .icon{font-size:15px}
+    .sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+    .new-btn{display:block;background:var(--green);color:#fff;text-align:center;padding:10px;border-radius:10px;font-size:13px;font-weight:500;text-decoration:none}
+    .status-pill{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);padding:6px 10px;background:var(--bg);border-radius:20px;border:1px solid var(--border)}
+    .status-dot{width:7px;height:7px;background:var(--green-lt);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--border);background:var(--cream);flex-shrink:0}
+    .topbar-left{display:flex;align-items:baseline;gap:14px}
+    .page-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text)}.page-title em{font-style:italic;color:var(--green-mid)}
+    .breadcrumb{font-size:12px;color:var(--muted)}
+    .topbar-right{display:flex;align-items:center;gap:10px}
+    .topbar-btn{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text);text-decoration:none;display:inline-block;transition:all .15s}
+    .topbar-btn:hover{background:var(--border)}
+    .content-area{flex:1;overflow-y:auto;padding:24px 28px}
+
+    /* Hero banner */
+    .hero-banner{background:var(--green);border-radius:var(--radius);padding:32px 36px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden}
+    .hero-banner::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:rgba(46,204,143,.1);border-radius:50%}
+    .hero-title{font-family:'DM Serif Display',serif;font-size:26px;margin-bottom:8px}
+    .hero-sub{font-size:14px;opacity:.8;line-height:1.6;max-width:600px}
+    .hero-badge{display:inline-block;background:rgba(46,204,143,.2);border:1px solid var(--green-lt);color:var(--green-lt);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;margin-top:12px}
+
+    /* Big number cards */
+    .impact-hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+    .impact-hero-card{background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;box-shadow:var(--shadow)}
+    .impact-hero-card.primary{background:var(--green);border-color:var(--green)}
+    .impact-hero-number{font-family:'DM Serif Display',serif;font-size:52px;line-height:1;margin-bottom:6px}
+    .impact-hero-card:not(.primary) .impact-hero-number{color:var(--green-mid)}
+    .impact-hero-card.primary .impact-hero-number{color:var(--green-lt)}
+    .impact-hero-label{font-size:14px;font-weight:600}
+    .impact-hero-card:not(.primary) .impact-hero-label{color:var(--text)}
+    .impact-hero-card.primary .impact-hero-label{color:#fff}
+    .impact-hero-sub{font-size:12px;margin-top:4px}
+    .impact-hero-card:not(.primary) .impact-hero-sub{color:var(--muted)}
+    .impact-hero-card.primary .impact-hero-sub{color:rgba(255,255,255,.65)}
+
+    /* Stat grid */
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+    .stat-card{background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+    .stat-num{font-family:'DM Serif Display',serif;font-size:34px;color:var(--text);line-height:1;margin-bottom:4px}
+    .stat-label{font-size:12px;color:var(--muted);font-weight:500}
+    .stat-card.warn{border-color:#fca5a5;background:#fef2f2}
+    .stat-card.warn .stat-num{color:var(--red)}
+
+    /* How it works */
+    .section-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:16px}
+    .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+    .how-card{background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+    .how-step{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green-lt);margin-bottom:8px}
+    .how-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px}
+    .how-desc{font-size:13px;color:var(--muted);line-height:1.6}
+    .how-gemini{font-size:11px;font-weight:600;color:var(--green-mid);margin-top:8px;padding:3px 8px;background:#f0fdf4;border-radius:20px;display:inline-block}
+
+    /* Responsible AI */
+    .safety-section{background:#fef9c3;border:1px solid #fde047;border-radius:var(--radius);padding:20px 24px;margin-bottom:24px}
+    .safety-title{font-size:14px;font-weight:700;color:#713f12;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .safety-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .safety-item{font-size:13px;color:#92400e;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+
+    /* Pilot */
+    .pilot-card{background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);padding:22px 26px}
+    .pilot-title{font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:8px;color:var(--text)}
+    .pilot-body{font-size:13.5px;color:var(--muted);line-height:1.7}
+    .pilot-badge{display:inline-block;background:#f0fdf4;border:1px solid #86efac;color:var(--green-mid);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;margin-top:10px}
+
+    @media(max-width:900px){.impact-hero-grid,.stat-grid,.how-grid{grid-template-columns:1fr 1fr}.safety-grid{grid-template-columns:1fr}}
+    @media(max-width:640px){.sidebar{display:none}.main{margin-left:0}}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26C17.81 13.47 19 11.38 19 9c0-3.87-3.13-7-7-7z" fill="#0a2e1e"/>
+        <path d="M9 21h6M10 17v4M14 17v4" stroke="#0a2e1e" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="logo-name">Community<em>Voice</em></div>
+  </div>
+  <div class="nav-label">Staff Menu</div>
+  <nav>
+    <a href="/"><span class="icon">💬</span> AI Assistant <span class="nav-dot"></span></a>
+    <a href="/dashboard"><span class="icon">📋</span> Case Dashboard <span class="nav-dot"></span></a>
+    <a href="/analytics"><span class="icon">📊</span> Analytics <span class="nav-dot"></span></a>
+    <a href="/resources"><span class="icon">📦</span> Resources <span class="nav-dot"></span></a>
+    <a href="/impact" class="active"><span class="icon">🌍</span> Impact <span class="nav-dot"></span></a>
+    <a href="/network"><span class="icon">🤝</span> Resource Network <span class="nav-dot"></span></a>
+  </nav>
+  <div class="sidebar-bottom">
+    <a href="/" class="new-btn">+ New Intake</a>
+    <a href="/staff/logout" style="display:block;text-align:center;padding:8px;font-size:12.5px;color:var(--muted);text-decoration:none;border-radius:8px;border:1px solid var(--border)">Sign out</a>
+    <div class="status-pill"><span class="status-dot"></span> System online</div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="page-title">Impact <em>Report</em></div>
+      <div class="breadcrumb">Real-world outcomes · Responsible AI · Community reach</div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="loadImpact()">↻ Refresh</button>
+      <a href="/staff/logout" class="topbar-btn">Sign out</a>
+    </div>
+  </div>
+
+  <div class="content-area">
+
+    <!-- Hero -->
+    <div class="hero-banner">
+      <div class="hero-title">CommunityVoice Impact</div>
+      <div class="hero-sub">Every intake that gets auto-resolved is a staff member freed to do deeper work. Every language supported is a barrier removed. Every crisis detected is a person who got help faster.</div>
+      <div class="hero-badge">🏆 Google Solution Challenge 2026 — Top 10 Finalist, North America</div>
+    </div>
+
+    <!-- Big 3 numbers -->
+    <div class="impact-hero-grid" id="hero-numbers">
+      <div class="impact-hero-card primary">
+        <div class="impact-hero-number" id="h-hours">—</div>
+        <div class="impact-hero-label">Staff Hours Saved</div>
+        <div class="impact-hero-sub">vs manual 23-min intake process</div>
+      </div>
+      <div class="impact-hero-card">
+        <div class="impact-hero-number" id="h-rate">—%</div>
+        <div class="impact-hero-label">Auto-Resolution Rate</div>
+        <div class="impact-hero-sub">cases handled with zero staff involvement</div>
+      </div>
+      <div class="impact-hero-card">
+        <div class="impact-hero-number" id="h-langs">—</div>
+        <div class="impact-hero-label">Languages Served</div>
+        <div class="impact-hero-sub">English · Spanish · French · Chinese · Arabic</div>
+      </div>
+    </div>
+
+    <!-- Detail stats -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="d-total">—</div>
+        <div class="stat-label">Total Intake Cases</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="d-auto">—</div>
+        <div class="stat-label">AI Auto-Resolved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="d-mins">—</div>
+        <div class="stat-label">Minutes Saved Total</div>
+      </div>
+      <div class="stat-card warn">
+        <div class="stat-num" id="d-crisis">—</div>
+        <div class="stat-label">Crisis Cases Escalated</div>
+      </div>
+    </div>
+
+    <!-- How AI is used -->
+    <div class="section-title">How Gemini AI Creates This Impact</div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-step">Gemini Use Case 1</div>
+        <div class="how-title">Conversational Intake</div>
+        <div class="how-desc">Gemini holds a warm, empathetic intake conversation — extracting name, need type, and urgency naturally in 5 languages. No forms. No phone calls.</div>
+        <div class="how-gemini">gemini-2.0-flash · multilingual</div>
+      </div>
+      <div class="how-card">
+        <div class="how-step">Gemini Use Case 2</div>
+        <div class="how-title">Autonomous Resource Allocation</div>
+        <div class="how-desc">A second Gemini call reads the live Firebase inventory and decides the best resource — reserving food bags, booking counselor slots, or issuing vouchers in real time.</div>
+        <div class="how-gemini">gemini-2.0-flash · decision-making</div>
+      </div>
+      <div class="how-card">
+        <div class="how-step">Gemini Use Case 3</div>
+        <div class="how-title">Operations Analytics</div>
+        <div class="how-desc">Gemini analyzes case trends and generates plain-language recommendations for nonprofit leadership — turning data into actionable operational insight.</div>
+        <div class="how-gemini">gemini-2.0-flash · summarization</div>
+      </div>
+    </div>
+
+    <!-- Responsible AI -->
+    <div class="safety-section">
+      <div class="safety-title">🧠 Responsible AI for Sensitive Cases</div>
+      <div class="safety-grid">
+        <div class="safety-item">✓ <span><strong>Mental health cases are never auto-resolved.</strong> All mental health intakes are escalated to a qualified human counselor. The AI explicitly tells users they will speak with a licensed professional — not a bot.</span></div>
+        <div class="safety-item">✓ <span><strong>Crisis keyword detection on every message.</strong> 988, Crisis Text Line, and 911 resources are surfaced immediately — before intake continues — when crisis language is detected.</span></div>
+        <div class="safety-item">✓ <span><strong>Safety notice is always visible.</strong> Community members see "This is an AI intake assistant — not a therapist" before their first message. There is no ambiguity about what the system is.</span></div>
+        <div class="safety-item">✓ <span><strong>Human follow-up on every case.</strong> Every case logged receives a staff review. Auto-resolution handles logistics — human judgment handles care.</span></div>
+      </div>
+    </div>
+
+    <!-- Pilot -->
+    <div class="pilot-card">
+      <div class="pilot-title">Real-World Deployment — Summer 2026</div>
+      <div class="pilot-body">CommunityVoice is being deployed as a live pilot with the <strong>Shiver PeaceWorker Program</strong> and partner NGOs during Summer 2026. This pilot will generate the first real-world data on staff time savings, community member experience, and auto-resolution rates across actual nonprofit intake operations — moving beyond prototype testing into genuine field deployment.</div>
+      <div class="pilot-badge">🤝 Shiver PeaceWorker Program · Partner NGOs · Summer 2026</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  async function loadImpact() {
+    try {
+      const res = await fetch('/api/analytics/summary');
+      if (res.status === 401) { window.location.href = '/staff/login'; return; }
+      const data = await res.json();
+      const impact = data.impact || {};
+      const set = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+
+      set('h-hours',  (impact.hours_saved || 0) + ' hrs');
+      set('h-rate',   (impact.auto_resolve_rate || 0) + '%');
+      set('h-langs',  impact.languages_used || 0);
+      set('d-total',  data.total || 0);
+      set('d-auto',   data.auto_resolved || 0);
+      set('d-mins',   impact.minutes_saved || 0);
+      set('d-crisis', impact.crisis_cases || 0);
+    } catch(e) { console.error('Impact load error:', e); }
+  }
+  document.addEventListener('DOMContentLoaded', loadImpact);
+</script>
+</body>
+</html>

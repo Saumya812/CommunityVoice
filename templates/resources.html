@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CommunityVoice — Resource Manager</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <!-- Google Maps loaded dynamically with API key -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -15,8 +16,6 @@
       --shadow: 0 2px 14px rgba(10,46,30,.09);
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; overflow: hidden; }
-
-    /* ── Sidebar ── */
     .sidebar { width: var(--sidebar-w); background: var(--cream); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 16px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
     .logo-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
     .logo-icon { width: 36px; height: 36px; background: var(--green-lt); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 6px; }
@@ -37,8 +36,6 @@
     .status-pill { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); padding: 6px 10px; background: var(--bg); border-radius: 20px; border: 1px solid var(--border); }
     .status-dot { width: 7px; height: 7px; background: var(--green-lt); border-radius: 50%; animation: pulse 2s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
-
-    /* ── Main ── */
     .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 28px; border-bottom: 1px solid var(--border); background: var(--cream); flex-shrink: 0; }
     .topbar-left { display: flex; align-items: baseline; gap: 14px; }
@@ -52,29 +49,19 @@
     .add-btn:hover { background: var(--green-mid); }
     .avatar { width: 34px; height: 34px; background: var(--green); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
     .content-area { flex: 1; overflow-y: auto; padding: 24px 28px; }
-
-    /* ── Low stock alert ── */
     .alert-banner { background: #fef3c7; border: 1px solid #fde68a; border-radius: var(--radius); padding: 14px 18px; margin-bottom: 20px; display: none; align-items: center; gap: 12px; }
     .alert-banner.show { display: flex; }
     .alert-text { font-size: 13px; color: #92400e; line-height: 1.5; flex: 1; }
     .alert-title { font-weight: 600; margin-bottom: 3px; }
-
-    /* ── Summary cards ── */
     .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
     .sum-card { background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
     .sum-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
     .sum-val { font-family: 'DM Serif Display', serif; font-size: 30px; color: var(--text); line-height: 1; }
     .sum-sub { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
-
-    /* ── Tabs ── */
     .tabs-row { display: flex; gap: 2px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
     .tab-btn { padding: 8px 18px; font-size: 13.5px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-left: none; border-right: none; border-top: none; font-family: 'DM Sans', sans-serif; transition: all .15s; }
     .tab-btn.active { color: var(--text); border-bottom-color: var(--green); }
-
-    /* ── Resource grid ── */
     .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
-
-    /* ── Resource card ── */
     .res-card { background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: box-shadow .15s; }
     .res-card:hover { box-shadow: var(--shadow); }
     .res-card-header { padding: 16px 18px 12px; border-bottom: 1px solid var(--border); }
@@ -88,8 +75,6 @@
     .tag-custom { background: #fef3c7; color: #92400e; }
     .res-card-body { padding: 14px 18px; }
     .res-card-actions { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
-
-    /* Quantity display */
     .qty-big { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); }
     .qty-unit { font-size: 13px; color: var(--muted); margin-left: 4px; }
     .qty-bar-track { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; margin: 8px 0 4px; }
@@ -98,8 +83,6 @@
     .qty-ok-text { font-size: 11.5px; color: var(--muted); }
     .low-badge { font-size: 10.5px; font-weight: 600; color: var(--red); background: #fee2e2; border: 1px solid #fecaca; border-radius: 20px; padding: 2px 8px; margin-left: 6px; }
     .inactive-badge { font-size: 10.5px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px; margin-left: 6px; }
-
-    /* Slots */
     .slots-container { display: flex; flex-direction: column; gap: 5px; max-height: 150px; overflow-y: auto; }
     .slot-item { display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; padding: 6px 10px; border-radius: 7px; background: var(--bg); }
     .slot-item.booked { opacity: .55; }
@@ -107,16 +90,12 @@
     .slot-status-free { font-size: 11px; color: var(--green-mid); font-weight: 600; }
     .slot-status-booked { font-size: 11px; color: var(--muted); }
     .res-notes { font-size: 12.5px; color: var(--muted); font-style: italic; margin-top: 10px; line-height: 1.4; }
-
-    /* Action buttons */
     .action-btn { padding: 6px 13px; border-radius: 8px; font-size: 12.5px; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 500; transition: all .15s; }
     .action-btn:hover { background: var(--border); }
     .action-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
     .action-btn.primary:hover { background: var(--green-mid); }
     .action-btn.danger { color: var(--red); border-color: #fecaca; background: #fff; }
     .action-btn.danger:hover { background: #fee2e2; }
-
-    /* Allocation history */
     .alloc-list { display: flex; flex-direction: column; gap: 10px; }
     .alloc-item { background: var(--cream); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
     .alloc-icon { font-size: 20px; flex-shrink: 0; }
@@ -124,17 +103,11 @@
     .alloc-name { font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
     .alloc-sub { font-size: 12px; color: var(--muted); }
     .alloc-time { font-size: 11px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
-
-    /* Empty state */
     .empty { text-align: center; padding: 52px 20px; color: var(--muted); grid-column: 1/-1; }
     .empty-icon { font-size: 38px; margin-bottom: 12px; }
     .empty p { font-size: 14px; line-height: 1.6; }
-
-    /* Toast */
     #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--green); color: #fff; padding: 10px 22px; border-radius: 24px; font-size: 13.5px; font-weight: 500; opacity: 0; pointer-events: none; transition: all .25s; z-index: 999; white-space: nowrap; }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* ── Modals ── */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
     .overlay.show { display: flex; }
     .modal { background: var(--cream); border-radius: 20px; padding: 32px 30px; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; }
@@ -157,7 +130,9 @@
     #pending-slots { display: flex; flex-direction: column; gap: 5px; }
     .pending-slot { display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; background: var(--cream); border: 1px solid var(--border); border-radius: 7px; padding: 6px 10px; }
     .remove-slot { background: none; border: none; color: var(--red); cursor: pointer; font-size: 14px; padding: 0 4px; }
-
+    /* Map styles */
+    #map { height: 420px; width: 100%; border-radius: 0 0 var(--radius) var(--radius); }
+    .map-list-item { display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin-bottom:8px; }
     @media (max-width: 900px) { .summary-row { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 640px) { .sidebar { display: none; } .main { margin-left: 0; } }
   </style>
@@ -176,9 +151,12 @@
   </div>
   <div class="nav-label">Staff Menu</div>
   <nav>
+    <a href="/"><span class="icon">💬</span> AI Assistant <span class="nav-dot"></span></a>
     <a href="/dashboard"><span class="icon">📋</span> Case Dashboard <span class="nav-dot"></span></a>
     <a href="/analytics"><span class="icon">📊</span> Analytics <span class="nav-dot"></span></a>
     <a href="/resources" class="active"><span class="icon">📦</span> Resources <span class="nav-dot"></span></a>
+    <a href="/impact"><span class="icon">🌍</span> Impact <span class="nav-dot"></span></a>
+    <a href="/network"><span class="icon">🤝</span> Resource Network <span class="nav-dot"></span></a>
   </nav>
   <div class="sidebar-bottom">
     <a href="/" class="new-btn" target="_blank">↗ Open Intake Portal</a>
@@ -191,7 +169,7 @@
   <div class="topbar">
     <div class="topbar-left">
       <div class="page-title">Resource <em>Manager</em></div>
-      <div class="breadcrumb">Inventory · Appointments · Allocation history</div>
+      <div class="breadcrumb">Inventory · Appointments · Map · Allocation history</div>
     </div>
     <div class="topbar-right">
       <button class="topbar-btn" onclick="loadAll()">↻ Refresh</button>
@@ -202,8 +180,6 @@
   </div>
 
   <div class="content-area">
-
-    <!-- Low stock alert banner -->
     <div class="alert-banner" id="alert-banner">
       <span style="font-size:22px;flex-shrink:0">⚠️</span>
       <div class="alert-text">
@@ -212,68 +188,60 @@
       </div>
     </div>
 
-    <!-- Summary cards -->
     <div class="summary-row">
-      <div class="sum-card">
-        <div class="sum-label">Total Resources</div>
-        <div class="sum-val" id="s-total">—</div>
-        <div class="sum-sub">across all types</div>
-      </div>
-      <div class="sum-card">
-        <div class="sum-label">Auto-Resolved Cases</div>
-        <div class="sum-val" id="s-auto">—</div>
-        <div class="sum-sub">handled automatically</div>
-      </div>
-      <div class="sum-card">
-        <div class="sum-label">Free Appt Slots</div>
-        <div class="sum-val" id="s-slots">—</div>
-        <div class="sum-sub">available to book</div>
-      </div>
-      <div class="sum-card">
-        <div class="sum-label" style="color:var(--red)">Low Stock Items</div>
-        <div class="sum-val" id="s-low" style="color:var(--red)">—</div>
-        <div class="sum-sub">need restocking</div>
-      </div>
+      <div class="sum-card"><div class="sum-label">Total Resources</div><div class="sum-val" id="s-total">—</div><div class="sum-sub">across all types</div></div>
+      <div class="sum-card"><div class="sum-label">Auto-Resolved Cases</div><div class="sum-val" id="s-auto">—</div><div class="sum-sub">handled automatically</div></div>
+      <div class="sum-card"><div class="sum-label">Free Appt Slots</div><div class="sum-val" id="s-slots">—</div><div class="sum-sub">available to book</div></div>
+      <div class="sum-card"><div class="sum-label" style="color:var(--red)">Low Stock Items</div><div class="sum-val" id="s-low" style="color:var(--red)">—</div><div class="sum-sub">need restocking</div></div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs-row">
-      <button class="tab-btn active" onclick="switchTab('inventory', this)">📦 Inventory & Vouchers</button>
-      <button class="tab-btn" onclick="switchTab('appointments', this)">📅 Appointments</button>
-      <button class="tab-btn" onclick="switchTab('history', this)">📋 Allocation History</button>
+      <button class="tab-btn active" onclick="switchTab('inventory',this)">📦 Inventory & Vouchers</button>
+      <button class="tab-btn" onclick="switchTab('appointments',this)">📅 Appointments</button>
+      <button class="tab-btn" onclick="switchTab('map',this)">🗺 Resource Map</button>
+      <button class="tab-btn" onclick="switchTab('history',this)">📋 Allocation History</button>
     </div>
 
     <div id="tab-inventory">
-      <div class="resource-grid" id="inventory-grid">
-        <div class="empty"><div class="empty-icon">📦</div><p>Loading…</p></div>
-      </div>
+      <div class="resource-grid" id="inventory-grid"><div class="empty"><div class="empty-icon">📦</div><p>Loading…</p></div></div>
     </div>
 
     <div id="tab-appointments" style="display:none">
-      <div class="resource-grid" id="appt-grid">
-        <div class="empty"><div class="empty-icon">📅</div><p>Loading…</p></div>
+      <div class="resource-grid" id="appt-grid"><div class="empty"><div class="empty-icon">📅</div><p>Loading…</p></div></div>
+    </div>
+
+    <div id="tab-map" style="display:none">
+      <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:15px;font-weight:600">📍 Resource Locations</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Resources with addresses appear as pins. Click a pin for details.</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)" id="map-count"></div>
+        </div>
+        <div id="map"></div>
+        <div style="padding:14px 20px;border-top:1px solid var(--border)">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Add an address when creating a resource to see it on the map.</div>
+          <div id="map-list"></div>
+        </div>
       </div>
     </div>
 
     <div id="tab-history" style="display:none">
-      <div class="alloc-list" id="alloc-list">
-        <div style="text-align:center;padding:40px;color:var(--muted)">Loading history…</div>
-      </div>
+      <div class="alloc-list" id="alloc-list"><div style="text-align:center;padding:40px;color:var(--muted)">Loading history…</div></div>
     </div>
 
-  </div><!-- /content-area -->
-</div><!-- /main -->
+  </div>
+</div>
 
-<!-- ── Add Resource Modal ── -->
+<!-- Add Resource Modal -->
 <div class="overlay" id="add-modal">
   <div class="modal">
     <h2>Add Resource</h2>
-
     <div class="field">
       <label>Resource Name *</label>
-      <input type="text" id="f-name" placeholder="e.g. Food Pantry Bags, Dr. Rivera Mental Health Sessions">
+      <input type="text" id="f-name" placeholder="e.g. Food Pantry Bags">
     </div>
-
     <div class="field-row">
       <div class="field">
         <label>Type *</label>
@@ -302,33 +270,17 @@
         </select>
       </div>
     </div>
-
-    <!-- Quantity fields -->
     <div id="sec-quantity" class="type-section" style="display:none">
       <div class="type-section-title">Quantity Settings</div>
       <div class="field-row">
-        <div class="field">
-          <label>Current Quantity *</label>
-          <input type="number" id="f-qty" min="0" placeholder="e.g. 20">
-        </div>
-        <div class="field">
-          <label>Unit label</label>
-          <input type="text" id="f-unit" placeholder="bags, boxes, meals…">
-        </div>
+        <div class="field"><label>Current Quantity *</label><input type="number" id="f-qty" min="0" placeholder="e.g. 20"></div>
+        <div class="field"><label>Unit label</label><input type="text" id="f-unit" placeholder="bags, boxes, meals…"></div>
       </div>
-      <div class="field">
-        <label>Low-stock alert when below</label>
-        <input type="number" id="f-threshold" min="0" value="3">
-      </div>
+      <div class="field"><label>Low-stock alert when below</label><input type="number" id="f-threshold" min="0" value="3"></div>
     </div>
-
-    <!-- Appointment fields -->
     <div id="sec-appointment" class="type-section" style="display:none">
       <div class="type-section-title">Appointment Settings</div>
-      <div class="field">
-        <label>Staff member</label>
-        <input type="text" id="f-staff" placeholder="e.g. Dr. Rivera, Case Worker Maria">
-      </div>
+      <div class="field"><label>Staff member</label><input type="text" id="f-staff" placeholder="e.g. Dr. Rivera"></div>
       <div class="field">
         <label>Add available time slots</label>
         <div class="slot-input-row">
@@ -338,40 +290,26 @@
         <div id="pending-slots"></div>
       </div>
     </div>
-
-    <!-- Voucher fields -->
     <div id="sec-voucher" class="type-section" style="display:none">
       <div class="type-section-title">Voucher Settings</div>
       <div class="field-row">
-        <div class="field">
-          <label>Number of vouchers *</label>
-          <input type="number" id="f-v-qty" min="0" placeholder="e.g. 10">
-        </div>
-        <div class="field">
-          <label>Value per voucher</label>
-          <input type="text" id="f-v-value" placeholder="e.g. $50, 1 month electric">
-        </div>
+        <div class="field"><label>Number of vouchers *</label><input type="number" id="f-v-qty" min="0" placeholder="e.g. 10"></div>
+        <div class="field"><label>Value per voucher</label><input type="text" id="f-v-value" placeholder="e.g. $50"></div>
       </div>
-      <div class="field">
-        <label>Low-stock alert when below</label>
-        <input type="number" id="f-v-threshold" min="0" value="3">
-      </div>
+      <div class="field"><label>Low-stock alert when below</label><input type="number" id="f-v-threshold" min="0" value="3"></div>
     </div>
-
-    <!-- Custom fields -->
     <div id="sec-custom" class="type-section" style="display:none">
       <div class="type-section-title">Custom Resource</div>
-      <div class="field">
-        <label>Description</label>
-        <textarea id="f-description" placeholder="Describe what this resource provides and how it gets allocated…"></textarea>
-      </div>
+      <div class="field"><label>Description</label><textarea id="f-description" placeholder="Describe what this resource provides…"></textarea></div>
     </div>
-
     <div class="field">
-      <label>Notes (optional — pickup info, restrictions, contact…)</label>
-      <input type="text" id="f-notes" placeholder="e.g. Pick up at 123 Main St, Mon–Fri 9–5">
+      <label>📍 Address (shows as pin on Resource Map)</label>
+      <input type="text" id="f-address" placeholder="e.g. 123 Main St, Baltimore, MD 21201">
     </div>
-
+    <div class="field">
+      <label>Notes (pickup info, restrictions, contact…)</label>
+      <input type="text" id="f-notes" placeholder="e.g. Pick up Mon–Fri 9–5">
+    </div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeModal('add-modal')">Cancel</button>
       <button class="modal-save" onclick="saveResource()">Save Resource</button>
@@ -379,14 +317,11 @@
   </div>
 </div>
 
-<!-- ── Restock Modal ── -->
+<!-- Restock Modal -->
 <div class="overlay" id="restock-modal">
   <div class="modal" style="max-width:360px">
     <h2>Restock Inventory</h2>
-    <div class="field">
-      <label>Quantity to add</label>
-      <input type="number" id="restock-qty" min="1" value="10">
-    </div>
+    <div class="field"><label>Quantity to add</label><input type="number" id="restock-qty" min="1" value="10"></div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeModal('restock-modal')">Cancel</button>
       <button class="modal-save" onclick="doRestock()">Restock</button>
@@ -394,14 +329,11 @@
   </div>
 </div>
 
-<!-- ── Add Slot Modal ── -->
+<!-- Add Slot Modal -->
 <div class="overlay" id="slot-modal">
   <div class="modal" style="max-width:380px">
     <h2>Add Appointment Slot</h2>
-    <div class="field">
-      <label>Date &amp; Time</label>
-      <input type="datetime-local" id="new-slot-dt">
-    </div>
+    <div class="field"><label>Date & Time</label><input type="datetime-local" id="new-slot-dt"></div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeModal('slot-modal')">Cancel</button>
       <button class="modal-save" onclick="doAddSlot()">Add Slot</button>
@@ -411,14 +343,35 @@
 
 <div id="toast"></div>
 
+<script>/* Google Maps loaded in initMap() */</script>
 <script>
-  let allResources   = [];
-  let allAllocations = [];
-  let pendingSlots   = [];
-  let restockTarget  = null;
-  let slotTarget     = null;
+  let allResources = [], allAllocations = [], pendingSlots = [], restockTarget = null, slotTarget = null;
+  let mapInstance = null, mapInitialized = false;
 
-  // ── Load data ─────────────────────────────────────────────────────────────
+  let MAPS_API_KEY = '';
+
+  // Fetch Maps API key securely from backend
+  async function loadMapsKey() {
+    try {
+      const res = await fetch('/api/config/maps');
+      if (res.ok) {
+        const data = await res.json();
+        MAPS_API_KEY = data.key || '';
+      }
+    } catch(e) { console.warn('Could not load maps key:', e); }
+  }
+
+  const CATEGORY_COLORS = {
+    food_assistance:'#2d6a4f', mental_health:'#5b21b6', utilities_help:'#b45309',
+    housing_shelter:'#0c4a6e', job_assistance:'#1e40af', medical_health:'#9d174d',
+    legal_aid:'#065f46', childcare:'#9a3412', transportation:'#14532d', other:'#374151'
+  };
+  const CATEGORY_ICONS = {
+    food_assistance:'🥗', mental_health:'🧠', utilities_help:'💡',
+    housing_shelter:'🏠', job_assistance:'💼', medical_health:'🏥',
+    legal_aid:'⚖️', childcare:'👶', transportation:'🚌', other:'📌'
+  };
+
   async function loadAll() {
     await Promise.all([loadResources(), loadAllocations(), loadAutoStats()]);
   }
@@ -428,11 +381,8 @@
       const res = await fetch('/api/resources');
       if (res.status === 401) { location.href = '/staff/login'; return; }
       allResources = await res.json();
-      renderSummary();
-      renderInventory();
-      renderAppointments();
-      checkLowStock();
-    } catch (e) { console.error(e); }
+      renderSummary(); renderInventory(); renderAppointments(); checkLowStock();
+    } catch(e) { console.error(e); }
   }
 
   async function loadAllocations() {
@@ -441,7 +391,7 @@
       if (!res.ok) return;
       allAllocations = await res.json();
       renderHistory();
-    } catch (e) { console.error(e); }
+    } catch(e) { console.error(e); }
   }
 
   async function loadAutoStats() {
@@ -450,388 +400,356 @@
       if (!res.ok) return;
       const d = await res.json();
       setText('s-auto', d.status?.auto_resolved ?? 0);
-    } catch (e) {}
+    } catch(e) {}
   }
 
-  // ── Summary ───────────────────────────────────────────────────────────────
   function renderSummary() {
     setText('s-total', allResources.length);
-    const freeSlots = allResources
-      .filter(r => r.type === 'appointment')
-      .reduce((acc, r) => acc + (r.slots || []).filter(s => !s.booked).length, 0);
+    const freeSlots = allResources.filter(r=>r.type==='appointment').reduce((a,r)=>a+(r.slots||[]).filter(s=>!s.booked).length,0);
     setText('s-slots', freeSlots);
-    const low = allResources.filter(r =>
-      ['quantity','voucher'].includes(r.type) &&
-      r.quantity <= (r.low_stock_threshold || 3) &&
-      r.active !== false
-    ).length;
+    const low = allResources.filter(r=>['quantity','voucher'].includes(r.type)&&r.quantity<=(r.low_stock_threshold||3)&&r.active!==false).length;
     setText('s-low', low);
   }
 
   function checkLowStock() {
-    const low = allResources.filter(r =>
-      ['quantity','voucher'].includes(r.type) &&
-      r.quantity <= (r.low_stock_threshold || 3) &&
-      r.active !== false
-    );
+    const low = allResources.filter(r=>['quantity','voucher'].includes(r.type)&&r.quantity<=(r.low_stock_threshold||3)&&r.active!==false);
     const banner = document.getElementById('alert-banner');
     if (low.length) {
       banner.classList.add('show');
-      document.getElementById('alert-items').textContent =
-        low.map(r => `${r.name}: ${r.quantity} ${r.unit || 'units'} remaining (alert at ${r.low_stock_threshold || 3})`).join(' · ');
-    } else {
-      banner.classList.remove('show');
-    }
+      document.getElementById('alert-items').textContent = low.map(r=>`${r.name}: ${r.quantity} ${r.unit||'units'} remaining`).join(' · ');
+    } else { banner.classList.remove('show'); }
   }
 
-  // ── Tabs ──────────────────────────────────────────────────────────────────
   function switchTab(tab, el) {
-    ['inventory','appointments','history'].forEach(t => {
-      document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+    ['inventory','appointments','map','history'].forEach(t => {
+      document.getElementById('tab-'+t).style.display = t===tab ? 'block' : 'none';
     });
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     el.classList.add('active');
+    if (tab === 'map') initMap();
   }
 
-  // ── Render inventory ──────────────────────────────────────────────────────
-  function renderInventory() {
-    const grid = document.getElementById('inventory-grid');
-    const items = allResources.filter(r => r.type !== 'appointment');
-    if (!items.length) {
-      grid.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>No inventory resources yet.<br>Click <strong>+ Add Resource</strong> to get started.<br><br>Try adding a "Food Pantry Bags" resource with type Quantity.</p></div>`;
+  // ── GOOGLE MAPS ───────────────────────────────────────────────────────────
+  let googleMapsLoaded = false;
+  let markers = [];
+
+  async function initMap() {
+    if (!MAPS_API_KEY) await loadMapsKey();
+    if (!MAPS_API_KEY) {
+      document.getElementById('map').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);flex-direction:column;gap:10px"><div style="font-size:32px">🗺</div><div style="font-size:13px">Add MAPS_API_KEY to your .env file to enable the map</div></div>';
       return;
     }
+    if (!googleMapsLoaded) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&callback=onGoogleMapsReady`;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+      googleMapsLoaded = true;
+    } else if (mapInitialized) {
+      refreshMapPins();
+    }
+  }
+
+  window.onGoogleMapsReady = function() {
+    mapInstance = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: 39.29, lng: -76.61 }, // Baltimore
+      zoom: 12,
+      mapTypeControl: true,
+      streetViewControl: true,
+      fullscreenControl: true,
+      styles: [
+        { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
+      ]
+    });
+    mapInitialized = true;
+    refreshMapPins();
+  };
+
+  async function geocodeAddress(address) {
+    try {
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${MAPS_API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.results && data.results[0]) {
+        const loc = data.results[0].geometry.location;
+        return { lat: loc.lat, lng: loc.lng };
+      }
+    } catch(e) { console.warn('Geocode error:', e); }
+    return null;
+  }
+
+  async function refreshMapPins() {
+    if (!mapInitialized) return;
+    // Clear old markers
+    markers.forEach(m => m.setMap(null));
+    markers = [];
+
+    const withAddr = allResources.filter(r => r.address && r.address.trim() && r.active !== false);
+    document.getElementById('map-count').textContent = `${withAddr.length} resource${withAddr.length!==1?'s':''} with locations`;
+
+    const mapList = document.getElementById('map-list');
+    mapList.innerHTML = withAddr.length ? withAddr.map(r => `
+      <div class="map-list-item">
+        <span style="font-size:18px">${CATEGORY_ICONS[r.category]||'📌'}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600">${esc(r.name)}</div>
+          <div style="font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.address)}</div>
+        </div>
+        <a href="https://maps.google.com/?q=${encodeURIComponent(r.address)}" target="_blank"
+           style="font-size:11.5px;color:var(--green-mid);font-weight:500;text-decoration:none;white-space:nowrap">Open Maps ↗</a>
+      </div>`).join('')
+      : '<div style="font-size:13px;color:var(--muted);text-align:center;padding:12px">No resources have addresses yet. Add an address when creating a resource.</div>';
+
+    if (!withAddr.length) return;
+
+    const bounds = new google.maps.LatLngBounds();
+    const infoWindow = new google.maps.InfoWindow();
+
+    for (const r of withAddr) {
+      const geo = await geocodeAddress(r.address);
+      if (!geo) continue;
+
+      const color = CATEGORY_COLORS[r.category] || '#374151';
+      const emoji = CATEGORY_ICONS[r.category] || '📌';
+
+      const typeLabel = r.type==='quantity'?`${r.quantity} ${r.unit||'units'} available`
+        :r.type==='appointment'?`${(r.slots||[]).filter(s=>!s.booked).length} slots free`
+        :r.type==='voucher'?`${r.quantity} vouchers`
+        :r.description||'Available';
+
+      // Custom HTML marker
+      const markerDiv = document.createElement('div');
+      markerDiv.style.cssText = `background:${color};color:#fff;border-radius:50% 50% 50% 0;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:18px;transform:rotate(-45deg);box-shadow:0 3px 12px rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.9);cursor:pointer`;
+      markerDiv.innerHTML = `<span style="transform:rotate(45deg)">${emoji}</span>`;
+
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        map: mapInstance,
+        position: geo,
+        content: markerDiv,
+        title: r.name,
+      });
+
+      const popupContent = `
+        <div style="font-family:'DM Sans',sans-serif;min-width:200px;max-width:260px;padding:4px">
+          <div style="font-size:15px;font-weight:600;color:#1a1a2e;margin-bottom:4px">${esc(r.name)}</div>
+          <div style="font-size:12px;color:#8a8585;text-transform:capitalize;margin-bottom:6px">${(r.category||'').replace(/_/g,' ')}</div>
+          <div style="font-size:13px;color:#1a5c3a;font-weight:600;margin-bottom:6px">${typeLabel}</div>
+          ${r.address?`<div style="font-size:12px;color:#7a6f62;margin-bottom:8px">📍 ${esc(r.address)}</div>`:''}
+          ${r.notes?`<div style="font-size:12px;color:#7a6f62;margin-bottom:8px">${esc(r.notes)}</div>`:''}
+          <a href="https://maps.google.com/?q=${encodeURIComponent(r.address)}" target="_blank"
+             style="display:inline-block;font-size:12.5px;color:#1a5c3a;font-weight:600;text-decoration:none;padding:6px 12px;background:#f0fdf4;border-radius:8px;border:1px solid #86efac">
+            🗺 Open in Google Maps ↗
+          </a>
+        </div>`;
+
+      marker.addListener('click', () => {
+        infoWindow.setContent(popupContent);
+        infoWindow.open(mapInstance, marker);
+      });
+
+      markers.push(marker);
+      bounds.extend(geo);
+    }
+
+    if (markers.length > 0) {
+      mapInstance.fitBounds(bounds);
+      if (markers.length === 1) mapInstance.setZoom(15);
+    }
+  }
+
+  // ── Inventory ─────────────────────────────────────────────────────────────
+  function renderInventory() {
+    const grid = document.getElementById('inventory-grid');
+    const items = allResources.filter(r=>r.type!=='appointment');
+    if (!items.length) { grid.innerHTML=`<div class="empty"><div class="empty-icon">📦</div><p>No inventory resources yet.<br>Click <strong>+ Add Resource</strong> to get started.</p></div>`; return; }
     grid.innerHTML = items.map(buildInventoryCard).join('');
   }
 
   function buildInventoryCard(r) {
-    const isLow = ['quantity','voucher'].includes(r.type) && r.quantity <= (r.low_stock_threshold || 3);
-    const inactive = r.active === false;
+    const isLow = ['quantity','voucher'].includes(r.type) && r.quantity<=(r.low_stock_threshold||3);
+    const inactive = r.active===false;
     const typeTag = `<span class="res-type-tag tag-${r.type}">${r.type}</span>`;
-
     let bodyHtml = '';
-
-    if (r.type === 'quantity' || r.type === 'voucher') {
-      const max = Math.max(r.quantity, (r.low_stock_threshold || 3) * 4);
-      const pct = max > 0 ? Math.round((r.quantity / max) * 100) : 0;
-      const barColor = isLow ? 'var(--red)' : 'var(--green-lt)';
-      bodyHtml = `
-        <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:6px">
-          <span class="qty-big ${isLow ? 'qty-low' : ''}" style="${isLow ? 'color:var(--red)' : ''}">${r.quantity}</span>
-          <span class="qty-unit">${r.unit || 'units'}</span>
-          ${r.type === 'voucher' && r.value ? `<span style="font-size:12px;color:var(--muted);margin-left:8px">@ ${esc(r.value)} each</span>` : ''}
-        </div>
-        <div class="qty-bar-track"><div class="qty-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-        <div class="${isLow ? 'qty-low-text' : 'qty-ok-text'}">
-          ${isLow ? '⚠ Low stock — ' : ''}Alert threshold: ${r.low_stock_threshold || 3} ${r.unit || 'units'}
-        </div>`;
-    } else if (r.type === 'custom') {
-      bodyHtml = `
-        <div style="font-size:13px;color:var(--text);line-height:1.5">${esc(r.description || '—')}</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:8px">Allocated ${r.allocation_count || 0} times</div>`;
-    }
-
-    if (r.notes) {
-      bodyHtml += `<div class="res-notes">${esc(r.notes)}</div>`;
-    }
-
-    return `<div class="res-card">
-      <div class="res-card-header">
-        <div class="res-card-top">
-          <div>
-            <div class="res-name">
-              ${esc(r.name)}
-              ${isLow ? '<span class="low-badge">Low stock</span>' : ''}
-              ${inactive ? '<span class="inactive-badge">Inactive</span>' : ''}
-            </div>
-            <div class="res-category">${(r.category || '').replace(/_/g, ' ')}</div>
-          </div>
-          ${typeTag}
-        </div>
+    if (r.type==='quantity'||r.type==='voucher') {
+      const max = Math.max(r.quantity,(r.low_stock_threshold||3)*4);
+      const pct = max>0?Math.round((r.quantity/max)*100):0;
+      bodyHtml = `<div style="display:flex;align-items:baseline;gap:4px;margin-bottom:6px">
+        <span class="qty-big" style="${isLow?'color:var(--red)':''}">${r.quantity}</span>
+        <span class="qty-unit">${r.unit||'units'}</span>
+        ${r.type==='voucher'&&r.value?`<span style="font-size:12px;color:var(--muted);margin-left:8px">@ ${esc(r.value)} each</span>`:''}
       </div>
+      <div class="qty-bar-track"><div class="qty-bar-fill" style="width:${pct}%;background:${isLow?'var(--red)':'var(--green-lt)'}"></div></div>
+      <div class="${isLow?'qty-low-text':'qty-ok-text'}">${isLow?'⚠ Low stock — ':''}Alert threshold: ${r.low_stock_threshold||3} ${r.unit||'units'}</div>`;
+    } else if (r.type==='custom') {
+      bodyHtml = `<div style="font-size:13px;color:var(--text);line-height:1.5">${esc(r.description||'—')}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">Allocated ${r.allocation_count||0} times</div>`;
+    }
+    if (r.notes) bodyHtml += `<div class="res-notes">${esc(r.notes)}</div>`;
+    if (r.address) bodyHtml += `<div style="font-size:11.5px;color:var(--green-mid);margin-top:6px">📍 ${esc(r.address)}</div>`;
+    return `<div class="res-card">
+      <div class="res-card-header"><div class="res-card-top"><div>
+        <div class="res-name">${esc(r.name)}${isLow?'<span class="low-badge">Low stock</span>':''}${inactive?'<span class="inactive-badge">Inactive</span>':''}</div>
+        <div class="res-category">${(r.category||'').replace(/_/g,' ')}</div>
+      </div>${typeTag}</div></div>
       <div class="res-card-body">${bodyHtml}</div>
       <div class="res-card-actions">
-        ${['quantity','voucher'].includes(r.type) ? `<button class="action-btn primary" onclick="openRestock('${r.id}')">+ Restock</button>` : ''}
-        <button class="action-btn" onclick="toggleActive('${r.id}', ${r.active !== false})">${inactive ? 'Enable' : 'Disable'}</button>
+        ${['quantity','voucher'].includes(r.type)?`<button class="action-btn primary" onclick="openRestock('${r.id}')">+ Restock</button>`:''}
+        <button class="action-btn" onclick="toggleActive('${r.id}',${r.active!==false})">${inactive?'Enable':'Disable'}</button>
         <button class="action-btn danger" onclick="deleteResource('${r.id}')">Delete</button>
-      </div>
-    </div>`;
+      </div></div>`;
   }
 
-  // ── Render appointments ───────────────────────────────────────────────────
   function renderAppointments() {
     const grid = document.getElementById('appt-grid');
-    const items = allResources.filter(r => r.type === 'appointment');
-    if (!items.length) {
-      grid.innerHTML = `<div class="empty"><div class="empty-icon">📅</div><p>No appointment resources yet.<br>Click <strong>+ Add Resource</strong> and choose type "Appointment".<br><br>Try adding "Dr. Rivera Mental Health Sessions" with some time slots.</p></div>`;
-      return;
-    }
+    const items = allResources.filter(r=>r.type==='appointment');
+    if (!items.length) { grid.innerHTML=`<div class="empty"><div class="empty-icon">📅</div><p>No appointment resources yet.</p></div>`; return; }
     grid.innerHTML = items.map(r => {
-      const slots  = r.slots || [];
-      const free   = slots.filter(s => !s.booked).length;
-      const booked = slots.filter(s => s.booked).length;
-
+      const slots=r.slots||[], free=slots.filter(s=>!s.booked).length, booked=slots.filter(s=>s.booked).length;
       const slotsHtml = slots.length
-        ? slots.map(s => `
-            <div class="slot-item ${s.booked ? 'booked' : ''}">
-              <span class="slot-time">${fmtDatetime(s.datetime)}</span>
-              ${s.booked
-                ? `<span class="slot-status-booked">→ ${esc(s.booked_by || 'Booked')}</span>`
-                : `<span class="slot-status-free">Available</span>`}
-            </div>`).join('')
-        : `<div style="font-size:12.5px;color:var(--muted)">No slots added yet — click "+ Add Slot"</div>`;
-
+        ? slots.map(s=>`<div class="slot-item ${s.booked?'booked':''}"><span class="slot-time">${fmtDatetime(s.datetime)}</span>${s.booked?`<span class="slot-status-booked">→ ${esc(s.booked_by||'Booked')}</span>`:'<span class="slot-status-free">Available</span>'}</div>`).join('')
+        : `<div style="font-size:12.5px;color:var(--muted)">No slots added yet</div>`;
       return `<div class="res-card">
-        <div class="res-card-header">
-          <div class="res-card-top">
-            <div>
-              <div class="res-name">${esc(r.name)}</div>
-              <div class="res-category">${r.staff_member ? esc(r.staff_member) + ' · ' : ''}${(r.category || '').replace(/_/g, ' ')}</div>
-            </div>
-            <span class="res-type-tag tag-appointment">appointment</span>
-          </div>
-          <div style="display:flex;gap:14px;margin-top:8px;font-size:12px">
-            <span style="color:var(--green-mid);font-weight:600">${free} free</span>
-            <span style="color:var(--muted)">${booked} booked</span>
-            <span style="color:var(--muted)">${slots.length} total</span>
-          </div>
-        </div>
-        <div class="res-card-body">
-          <div class="slots-container">${slotsHtml}</div>
-          ${r.notes ? `<div class="res-notes">${esc(r.notes)}</div>` : ''}
-        </div>
+        <div class="res-card-header"><div class="res-card-top"><div>
+          <div class="res-name">${esc(r.name)}</div>
+          <div class="res-category">${r.staff_member?esc(r.staff_member)+' · ':''}${(r.category||'').replace(/_/g,' ')}</div>
+        </div><span class="res-type-tag tag-appointment">appointment</span></div>
+        <div style="display:flex;gap:14px;margin-top:8px;font-size:12px">
+          <span style="color:var(--green-mid);font-weight:600">${free} free</span>
+          <span style="color:var(--muted)">${booked} booked</span>
+        </div></div>
+        <div class="res-card-body"><div class="slots-container">${slotsHtml}</div>${r.notes?`<div class="res-notes">${esc(r.notes)}</div>`:''}</div>
         <div class="res-card-actions">
           <button class="action-btn primary" onclick="openSlotModal('${r.id}')">+ Add Slot</button>
-          <button class="action-btn" onclick="toggleActive('${r.id}', ${r.active !== false})">${r.active === false ? 'Enable' : 'Disable'}</button>
+          <button class="action-btn" onclick="toggleActive('${r.id}',${r.active!==false})">${r.active===false?'Enable':'Disable'}</button>
           <button class="action-btn danger" onclick="deleteResource('${r.id}')">Delete</button>
-        </div>
-      </div>`;
+        </div></div>`;
     }).join('');
   }
 
-  // ── Render allocation history ─────────────────────────────────────────────
   function renderHistory() {
     const list = document.getElementById('alloc-list');
-    if (!allAllocations.length) {
-      list.innerHTML = `<div style="text-align:center;padding:52px;color:var(--muted)">
-        <div style="font-size:36px;margin-bottom:12px">📋</div>
-        <div style="font-size:14px">No allocations yet.<br>Allocations appear here when the AI auto-resolves a case.</div>
-      </div>`;
-      return;
-    }
-    const ICONS = {
-      food_assistance:'🥗', mental_health:'🧠', utilities_help:'💡',
-      housing_shelter:'🏠', job_assistance:'💼', medical_health:'🏥',
-      legal_aid:'⚖️', childcare:'👶', transportation:'🚌', other:'📌'
-    };
+    if (!allAllocations.length) { list.innerHTML=`<div style="text-align:center;padding:52px;color:var(--muted)"><div style="font-size:36px;margin-bottom:12px">📋</div><div>No allocations yet.</div></div>`; return; }
+    const ICONS={food_assistance:'🥗',mental_health:'🧠',utilities_help:'💡',housing_shelter:'🏠',job_assistance:'💼',medical_health:'🏥',legal_aid:'⚖️',childcare:'👶',transportation:'🚌',other:'📌'};
     list.innerHTML = allAllocations.map(a => {
-      const ts  = a.timestamp ? new Date(a.timestamp).toLocaleString('en-US', {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '—';
-      const res = allResources.find(r => r.id === a.resource_id);
-      const icon = ICONS[a.need_type] || '📌';
-      return `<div class="alloc-item">
-        <span class="alloc-icon">${icon}</span>
-        <div class="alloc-main">
-          <div class="alloc-name">${esc(a.case_name || '—')} — ${esc(a.summary || 'Resource allocated')}</div>
-          <div class="alloc-sub">${(a.need_type || '').replace(/_/g,' ')} · ${res ? esc(res.name) : 'Resource'} · qty: ${a.quantity || 1}</div>
-        </div>
-        <div class="alloc-time">${ts}</div>
-      </div>`;
+      const ts=a.timestamp?new Date(a.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'—';
+      const res=allResources.find(r=>r.id===a.resource_id);
+      return `<div class="alloc-item"><span class="alloc-icon">${ICONS[a.need_type]||'📌'}</span>
+        <div class="alloc-main"><div class="alloc-name">${esc(a.case_name||'—')} — ${esc(a.summary||'Resource allocated')}</div>
+        <div class="alloc-sub">${(a.need_type||'').replace(/_/g,' ')} · ${res?esc(res.name):'Resource'} · qty: ${a.quantity||1}</div></div>
+        <div class="alloc-time">${ts}</div></div>`;
     }).join('');
   }
 
-  // ── Add resource modal ────────────────────────────────────────────────────
+  // ── Modal ─────────────────────────────────────────────────────────────────
   function openAddModal() {
-    pendingSlots = [];
-    ['f-name','f-notes','f-unit','f-staff','f-description','f-v-value'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = '';
-    });
-    ['f-qty','f-v-qty'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    ['f-threshold','f-v-threshold'].forEach(id => { const el = document.getElementById(id); if (el) el.value = '3'; });
-    document.getElementById('f-type').value     = '';
-    document.getElementById('f-category').value = '';
-    document.getElementById('pending-slots').innerHTML = '';
-    ['sec-quantity','sec-appointment','sec-voucher','sec-custom'].forEach(id =>
-      document.getElementById(id).style.display = 'none'
-    );
+    pendingSlots=[];
+    ['f-name','f-notes','f-address','f-unit','f-staff','f-description','f-v-value'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['f-qty','f-v-qty'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['f-threshold','f-v-threshold'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='3';});
+    document.getElementById('f-type').value='';
+    document.getElementById('f-category').value='';
+    document.getElementById('pending-slots').innerHTML='';
+    ['sec-quantity','sec-appointment','sec-voucher','sec-custom'].forEach(id=>document.getElementById(id).style.display='none');
     openModal('add-modal');
   }
 
   function onTypeChange() {
-    const type = document.getElementById('f-type').value;
-    ['quantity','appointment','voucher','custom'].forEach(t =>
-      document.getElementById('sec-' + t).style.display = t === type ? 'block' : 'none'
-    );
+    const type=document.getElementById('f-type').value;
+    ['quantity','appointment','voucher','custom'].forEach(t=>document.getElementById('sec-'+t).style.display=t===type?'block':'none');
   }
 
   function addPendingSlot() {
-    const val = document.getElementById('f-slot-dt').value;
-    if (!val) return;
-    if (pendingSlots.includes(val)) { showToast('Slot already added'); return; }
+    const val=document.getElementById('f-slot-dt').value;
+    if(!val)return;
+    if(pendingSlots.includes(val)){showToast('Slot already added');return;}
     pendingSlots.push(val);
     renderPendingSlots();
-    document.getElementById('f-slot-dt').value = '';
+    document.getElementById('f-slot-dt').value='';
   }
 
-  function removePendingSlot(idx) {
-    pendingSlots.splice(idx, 1);
-    renderPendingSlots();
-  }
+  function removePendingSlot(idx){pendingSlots.splice(idx,1);renderPendingSlots();}
 
   function renderPendingSlots() {
-    document.getElementById('pending-slots').innerHTML = pendingSlots.map((s, i) => `
-      <div class="pending-slot">
-        <span>${fmtDatetime(s)}</span>
-        <button class="remove-slot" onclick="removePendingSlot(${i})">✕</button>
-      </div>`).join('');
+    document.getElementById('pending-slots').innerHTML=pendingSlots.map((s,i)=>`
+      <div class="pending-slot"><span>${fmtDatetime(s)}</span><button class="remove-slot" onclick="removePendingSlot(${i})">✕</button></div>`).join('');
   }
 
   async function saveResource() {
-    const type = document.getElementById('f-type').value;
-    const name = document.getElementById('f-name').value.trim();
-    const cat  = document.getElementById('f-category').value;
-
-    if (!name)  { showToast('Please enter a resource name'); return; }
-    if (!type)  { showToast('Please select a type'); return; }
-    if (!cat)   { showToast('Please select a need category'); return; }
-
-    const payload = {
-      name, type, category: cat,
-      notes: document.getElementById('f-notes').value.trim()
-    };
-
-    if (type === 'quantity') {
-      payload.quantity  = parseInt(document.getElementById('f-qty').value) || 0;
-      payload.unit      = document.getElementById('f-unit').value.trim() || 'units';
-      payload.low_stock_threshold = parseInt(document.getElementById('f-threshold').value) || 3;
-    } else if (type === 'appointment') {
-      payload.staff_member = document.getElementById('f-staff').value.trim();
-      payload.slots        = pendingSlots;
-    } else if (type === 'voucher') {
-      payload.quantity  = parseInt(document.getElementById('f-v-qty').value) || 0;
-      payload.value     = document.getElementById('f-v-value').value.trim();
-      payload.unit      = 'vouchers';
-      payload.low_stock_threshold = parseInt(document.getElementById('f-v-threshold').value) || 3;
-    } else if (type === 'custom') {
-      payload.description = document.getElementById('f-description').value.trim();
+    const type=document.getElementById('f-type').value;
+    const name=document.getElementById('f-name').value.trim();
+    const cat=document.getElementById('f-category').value;
+    if(!name){showToast('Please enter a resource name');return;}
+    if(!type){showToast('Please select a type');return;}
+    if(!cat){showToast('Please select a need category');return;}
+    const payload={name,type,category:cat,
+      notes:document.getElementById('f-notes').value.trim(),
+      address:document.getElementById('f-address').value.trim()};
+    if(type==='quantity'){
+      payload.quantity=parseInt(document.getElementById('f-qty').value)||0;
+      payload.unit=document.getElementById('f-unit').value.trim()||'units';
+      payload.low_stock_threshold=parseInt(document.getElementById('f-threshold').value)||3;
+    } else if(type==='appointment'){
+      payload.staff_member=document.getElementById('f-staff').value.trim();
+      payload.slots=pendingSlots;
+    } else if(type==='voucher'){
+      payload.quantity=parseInt(document.getElementById('f-v-qty').value)||0;
+      payload.value=document.getElementById('f-v-value').value.trim();
+      payload.unit='vouchers';
+      payload.low_stock_threshold=parseInt(document.getElementById('f-v-threshold').value)||3;
+    } else if(type==='custom'){
+      payload.description=document.getElementById('f-description').value.trim();
     }
-
     try {
-      const res = await fetch('/api/resources', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if (res.ok) {
-        showToast('✓ Resource saved');
-        closeModal('add-modal');
-        await loadResources();
-      } else {
-        showToast('Error: ' + (data.error || 'Unknown error'));
-      }
-    } catch (e) {
-      showToast('Network error — check connection');
-    }
+      const res=await fetch('/api/resources',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const data=await res.json();
+      if(res.ok){showToast('✓ Resource saved');closeModal('add-modal');await loadResources();}
+      else showToast('Error: '+(data.error||'Unknown error'));
+    } catch(e){showToast('Network error');}
   }
 
-  // ── Restock ───────────────────────────────────────────────────────────────
-  function openRestock(id) {
-    restockTarget = id;
-    document.getElementById('restock-qty').value = 10;
-    openModal('restock-modal');
-  }
-
+  function openRestock(id){restockTarget=id;document.getElementById('restock-qty').value=10;openModal('restock-modal');}
   async function doRestock() {
-    const qty = parseInt(document.getElementById('restock-qty').value) || 0;
-    if (qty <= 0) { showToast('Enter a positive quantity'); return; }
+    const qty=parseInt(document.getElementById('restock-qty').value)||0;
+    if(qty<=0){showToast('Enter a positive quantity');return;}
     try {
-      const res = await fetch(`/api/resources/${restockTarget}/restock`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity: qty })
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast(`✓ Restocked → ${data.new_quantity} total`);
-        closeModal('restock-modal');
-        await loadResources();
-      }
-    } catch (e) { showToast('Error restocking'); }
+      const res=await fetch(`/api/resources/${restockTarget}/restock`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({quantity:qty})});
+      const data=await res.json();
+      if(data.success){showToast(`✓ Restocked → ${data.new_quantity} total`);closeModal('restock-modal');await loadResources();}
+    } catch(e){showToast('Error restocking');}
   }
 
-  // ── Add appointment slot ──────────────────────────────────────────────────
-  function openSlotModal(id) {
-    slotTarget = id;
-    document.getElementById('new-slot-dt').value = '';
-    openModal('slot-modal');
-  }
-
+  function openSlotModal(id){slotTarget=id;document.getElementById('new-slot-dt').value='';openModal('slot-modal');}
   async function doAddSlot() {
-    const dt = document.getElementById('new-slot-dt').value;
-    if (!dt) { showToast('Select a date and time'); return; }
+    const dt=document.getElementById('new-slot-dt').value;
+    if(!dt){showToast('Select a date and time');return;}
     try {
-      const res = await fetch(`/api/resources/${slotTarget}/add_slot`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ datetime: dt })
-      });
-      if ((await res.json()).success) {
-        showToast('✓ Slot added');
-        closeModal('slot-modal');
-        await loadResources();
-      }
-    } catch (e) { showToast('Error adding slot'); }
+      const res=await fetch(`/api/resources/${slotTarget}/add_slot`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({datetime:dt})});
+      if((await res.json()).success){showToast('✓ Slot added');closeModal('slot-modal');await loadResources();}
+    } catch(e){showToast('Error adding slot');}
   }
 
-  // ── Toggle active / Delete ────────────────────────────────────────────────
-  async function toggleActive(id, currentlyActive) {
-    await fetch(`/api/resources/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ active: !currentlyActive })
-    });
-    showToast(currentlyActive ? 'Resource disabled' : 'Resource enabled');
+  async function toggleActive(id,currentlyActive) {
+    await fetch(`/api/resources/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:!currentlyActive})});
+    showToast(currentlyActive?'Resource disabled':'Resource enabled');
     await loadResources();
   }
 
   async function deleteResource(id) {
-    if (!confirm('Delete this resource? This cannot be undone.')) return;
-    await fetch(`/api/resources/${id}`, { method: 'DELETE' });
+    if(!confirm('Delete this resource? This cannot be undone.'))return;
+    await fetch(`/api/resources/${id}`,{method:'DELETE'});
     showToast('Resource deleted');
     await loadResources();
   }
 
-  // ── Utilities ─────────────────────────────────────────────────────────────
-  function openModal(id)  { document.getElementById(id).classList.add('show'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+  function openModal(id){document.getElementById(id).classList.add('show');}
+  function closeModal(id){document.getElementById(id).classList.remove('show');}
+  function fmtDatetime(dt){if(!dt)return'—';try{return new Date(dt).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return dt;}}
+  function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function showToast(msg,dur=2800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
 
-  function fmtDatetime(dt) {
-    if (!dt) return '—';
-    try {
-      return new Date(dt).toLocaleString('en-US', {
-        weekday: 'short', month: 'short', day: 'numeric',
-        hour: 'numeric', minute: '2-digit'
-      });
-    } catch(e) { return dt; }
-  }
-
-  function setText(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
-  function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function showToast(msg, dur = 2800) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), dur);
-  }
-
-  // Close modals on overlay click
-  document.querySelectorAll('.overlay').forEach(o => {
-    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('show'); });
-  });
-
+  document.querySelectorAll('.overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');});});
   document.addEventListener('DOMContentLoaded', loadAll);
 </script>
 </body>

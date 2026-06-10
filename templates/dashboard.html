@@ -6,152 +6,105 @@
   <title>CommunityVoice — Case Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --green:     #0a2e1e;
-      --green-mid: #1a5c3a;
-      --green-lt:  #2ecc8f;
-      --cream:     #faf8f3;
-      --bg:        #f4f1ea;
-      --border:    #e5e0d5;
-      --text:      #1a1a2e;
-      --muted:     #8a8585;
-      --red:       #e84855;
-      --amber:     #f5a623;
-      --blue:      #3b82f6;
-      --sidebar-w: 240px;
-      --radius:    14px;
-      --shadow:    0 2px 14px rgba(10,46,30,.09);
-    }
-    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); display:flex; min-height:100vh; overflow:hidden; }
-
-    /* Sidebar */
-    .sidebar { width:var(--sidebar-w); background:var(--cream); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:24px 16px; position:fixed; top:0; left:0; bottom:0; z-index:100; }
-    .logo-wrap { display:flex; align-items:center; gap:10px; margin-bottom:32px; }
-    .logo-icon { width:36px; height:36px; background:var(--green-lt); border-radius:10px; display:flex; align-items:center; justify-content:center; padding:6px; }
-    .logo-icon svg { width:100%; height:100%; }
-    .logo-name { font-size:15px; font-weight:600; color:var(--text); letter-spacing:-.3px; }
-    .logo-name em { font-style:italic; color:var(--green-mid); }
-    .nav-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:8px; }
-    nav { display:flex; flex-direction:column; gap:2px; }
-    nav a { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:13.5px; font-weight:500; color:var(--muted); text-decoration:none; transition:all .18s; position:relative; }
-    nav a:hover { background:var(--bg); color:var(--text); }
-    nav a.active { background:var(--green); color:#fff; }
-    .nav-dot { width:6px; height:6px; border-radius:50%; background:transparent; margin-left:auto; }
-    nav a.active .nav-dot { background:var(--green-lt); }
-    .icon { font-size:15px; }
-    .sidebar-bottom { margin-top:auto; display:flex; flex-direction:column; gap:10px; }
-    .new-btn { display:block; background:var(--green); color:#fff; text-align:center; padding:10px; border-radius:10px; font-size:13px; font-weight:500; text-decoration:none; transition:background .18s; }
-    .new-btn:hover { background:var(--green-mid); }
-    .status-pill { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); padding:6px 10px; background:var(--bg); border-radius:20px; border:1px solid var(--border); }
-    .status-dot { width:7px; height:7px; background:var(--green-lt); border-radius:50%; animation:pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
-
-    /* Main */
-    .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
-
-    /* Topbar */
-    .topbar { display:flex; align-items:center; justify-content:space-between; padding:18px 28px; border-bottom:1px solid var(--border); background:var(--cream); flex-shrink:0; }
-    .topbar-left { display:flex; align-items:baseline; gap:14px; }
-    .page-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--text); }
-    .page-title em { font-style:italic; color:var(--green-mid); }
-    .breadcrumb { font-size:12px; color:var(--muted); }
-    .topbar-right { display:flex; align-items:center; gap:10px; }
-    .topbar-btn { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:7px 14px; font-size:13px; font-family:'DM Sans',sans-serif; cursor:pointer; color:var(--text); transition:all .15s; }
-    .topbar-btn:hover { background:var(--border); }
-    .avatar-btn { width:34px; height:34px; background:var(--green); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; cursor:pointer; border:none; }
-
-    /* Content */
-    .content-area { flex:1; overflow-y:auto; padding:24px 28px; }
-    .dashboard-wrap { display:flex; flex-direction:column; gap:20px; }
-
-    /* Stats */
-    .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-    .stat-card { background:var(--cream); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; }
-    .stat-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-    .stat-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
-    .stat-icon.green { background:#d1fae5; }
-    .stat-icon.red   { background:#fee2e2; }
-    .stat-icon.amber { background:#fef3c7; }
-    .stat-icon.blue  { background:#e0f2fe; }
-    .stat-trend { font-size:11px; font-weight:600; color:var(--green-lt); }
-    .stat-val { font-family:'DM Serif Display',serif; font-size:34px; color:var(--text); line-height:1; margin-bottom:4px; }
-    .stat-label { font-size:12px; color:var(--muted); font-weight:500; }
-
-    /* Section header */
-    .section-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-    .section-title { font-size:15px; font-weight:600; color:var(--text); }
-    .section-action { font-size:12.5px; color:var(--green-mid); cursor:pointer; background:none; border:none; font-family:'DM Sans',sans-serif; font-weight:500; }
-
-    /* Filters */
-    .filters-row { display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-    .filt-btn { padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:var(--cream); font-size:12.5px; font-family:'DM Sans',sans-serif; cursor:pointer; color:var(--muted); transition:all .15s; }
-    .filt-btn:hover,.filt-btn.active { background:var(--green); color:#fff; border-color:var(--green); }
-    .search-input { margin-left:auto; padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:var(--cream); font-size:12.5px; font-family:'DM Sans',sans-serif; color:var(--text); outline:none; width:200px; transition:border-color .15s; }
-    .search-input:focus { border-color:var(--green-mid); }
-
-    /* Case cards */
-    .cases-list { display:flex; flex-direction:column; gap:10px; }
-    .case-card { background:var(--cream); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; transition:box-shadow .15s; }
-    .case-card:hover { box-shadow:var(--shadow); }
-    .case-card-top { display:flex; align-items:center; gap:16px; padding:16px 20px; }
-    .urgency-bar { width:4px; border-radius:4px; align-self:stretch; flex-shrink:0; min-height:44px; }
-    .urgency-bar.high   { background:var(--red); }
-    .urgency-bar.medium { background:var(--amber); }
-    .urgency-bar.low    { background:var(--green-lt); }
-    .case-main { flex:1; min-width:0; }
-    .case-name { font-size:14px; font-weight:600; margin-bottom:3px; }
-    .lang-tag { font-size:10px; background:var(--bg); border:1px solid var(--border); color:var(--muted); border-radius:4px; padding:1px 5px; font-weight:500; margin-left:5px; vertical-align:middle; }
-    .case-summary { font-size:13px; color:var(--muted); line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:480px; }
-    .case-meta { display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; }
-    .tag { font-size:11px; font-weight:500; padding:3px 9px; border-radius:20px; background:var(--bg); border:1px solid var(--border); color:var(--muted); text-transform:capitalize; }
-    .tag.need { background:#e8f5ff; color:#1a5c8a; border-color:#bfdbfe; }
-    .tag.urgency-high   { background:#fee2e2; color:#991b1b; border-color:#fecaca; }
-    .tag.urgency-medium { background:#fef3c7; color:#92400e; border-color:#fde68a; }
-    .tag.urgency-low    { background:#d1fae5; color:#065f46; border-color:#6ee7b7; }
-    .case-actions { display:flex; gap:8px; flex-shrink:0; align-items:center; }
-    .status-sel { padding:6px 10px; border-radius:8px; border:1px solid var(--border); font-size:12px; font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); cursor:pointer; }
-    .expand-btn { padding:6px 12px; border-radius:8px; border:1px solid var(--border); font-size:12px; font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--muted); cursor:pointer; white-space:nowrap; transition:all .15s; }
-    .expand-btn:hover { background:var(--border); }
-    .case-time { font-size:11px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
-
-    /* Case detail (expandable) */
-    .case-detail { display:none; padding:0 20px 16px 40px; border-top:1px solid var(--border); }
-    .case-detail.open { display:block; }
-
-    /* Referrals in dashboard */
-    .referrals-mini { margin-top:14px; margin-bottom:12px; }
-    .ref-mini-title { font-size:11.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
-    .ref-mini-list { display:flex; flex-direction:column; gap:5px; }
-    .ref-mini-item { font-size:12.5px; color:var(--text); background:var(--bg); border-radius:8px; padding:7px 12px; border:1px solid var(--border); line-height:1.4; }
-
-    /* Notes */
-    .notes-section { margin-top:12px; }
-    .notes-title { font-size:11.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
-    .note-item { font-size:12.5px; color:var(--text); background:var(--bg); border-radius:8px; padding:8px 12px; border:1px solid var(--border); margin-bottom:6px; line-height:1.5; }
-    .note-meta { font-size:11px; color:var(--muted); margin-top:3px; }
-    .note-input-row { display:flex; gap:8px; margin-top:8px; }
-    .note-input { flex:1; padding:8px 12px; border-radius:8px; border:1px solid var(--border); font-size:13px; font-family:'DM Sans',sans-serif; color:var(--text); background:var(--cream); outline:none; transition:border-color .15s; }
-    .note-input:focus { border-color:var(--green-mid); }
-    .note-add-btn { padding:8px 16px; background:var(--green); color:#fff; border:none; border-radius:8px; font-size:12.5px; font-family:'DM Sans',sans-serif; font-weight:500; cursor:pointer; transition:background .15s; white-space:nowrap; }
-    .note-add-btn:hover { background:var(--green-mid); }
-
-    /* Toast */
-    #toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--green); color:#fff; padding:10px 22px; border-radius:24px; font-size:13.5px; font-weight:500; opacity:0; pointer-events:none; transition:all .25s; z-index:999; white-space:nowrap; }
-    #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-    /* Empty state */
-    .empty-state { text-align:center; padding:52px 20px; color:var(--muted); }
-    .empty-state .empty-icon { font-size:38px; margin-bottom:12px; }
-    .empty-state p { font-size:14px; }
-
-    /* Responsive */
-    @media(max-width:900px) { .stats-grid { grid-template-columns:repeat(2,1fr); } }
-    @media(max-width:640px) { .sidebar { display:none; } .main { margin-left:0; } }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--green:#0a2e1e;--green-mid:#1a5c3a;--green-lt:#2ecc8f;--cream:#faf8f3;--bg:#f4f1ea;--border:#e5e0d5;--text:#1a1a2e;--muted:#8a8585;--red:#e84855;--amber:#f5a623;--sidebar-w:240px;--radius:14px;--shadow:0 2px 14px rgba(10,46,30,.09)}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow:hidden}
+    .sidebar{width:var(--sidebar-w);background:var(--cream);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 16px;position:fixed;top:0;left:0;bottom:0;z-index:100}
+    .logo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+    .logo-icon{width:36px;height:36px;background:var(--green-lt);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px}
+    .logo-icon svg{width:100%;height:100%}
+    .logo-name{font-size:15px;font-weight:600;color:var(--text)}.logo-name em{font-style:italic;color:var(--green-mid)}
+    .nav-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+    nav{display:flex;flex-direction:column;gap:2px}
+    nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none;transition:all .18s}
+    nav a:hover{background:var(--bg);color:var(--text)}
+    nav a.active{background:var(--green);color:#fff}
+    .nav-dot{width:6px;height:6px;border-radius:50%;background:transparent;margin-left:auto}
+    nav a.active .nav-dot{background:var(--green-lt)}
+    .icon{font-size:15px}
+    .sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+    .new-btn{display:block;background:var(--green);color:#fff;text-align:center;padding:10px;border-radius:10px;font-size:13px;font-weight:500;text-decoration:none}
+    .new-btn:hover{background:var(--green-mid)}
+    .status-pill{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);padding:6px 10px;background:var(--bg);border-radius:20px;border:1px solid var(--border)}
+    .status-dot{width:7px;height:7px;background:var(--green-lt);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--border);background:var(--cream);flex-shrink:0}
+    .topbar-left{display:flex;align-items:baseline;gap:14px}
+    .page-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text)}.page-title em{font-style:italic;color:var(--green-mid)}
+    .breadcrumb{font-size:12px;color:var(--muted)}
+    .topbar-right{display:flex;align-items:center;gap:10px}
+    .topbar-btn{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text);text-decoration:none;display:inline-block;transition:all .15s}
+    .topbar-btn:hover{background:var(--border)}
+    .content-area{flex:1;overflow-y:auto;padding:24px 28px}
+    .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+    .stat-card{background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+    .stat-card.highlight{border-color:var(--green-lt);background:#f0fdf4}
+    .stat-card.highlight .stat-val{color:var(--green-mid)}
+    .stat-card.danger{border-color:#fca5a5;background:#fef2f2}
+    .stat-card.danger .stat-val{color:var(--red)}
+    .stat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .stat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+    .stat-icon.green{background:#d1fae5}.stat-icon.red{background:#fee2e2}.stat-icon.amber{background:#fef3c7}
+    .stat-trend{font-size:11px;font-weight:600;color:var(--green-lt)}
+    .stat-val{font-family:'DM Serif Display',serif;font-size:34px;color:var(--text);line-height:1;margin-bottom:4px}
+    .stat-label{font-size:12px;color:var(--muted);font-weight:500}
+    .section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .section-title{font-size:15px;font-weight:600;color:var(--text)}
+    .filters-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+    .filt-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--cream);font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s}
+    .filt-btn:hover,.filt-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+    .filt-btn.crisis-btn{border-color:#fca5a5;color:var(--red)}
+    .filt-btn.crisis-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+    .search-input{margin-left:auto;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--cream);font-size:12.5px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;width:200px}
+    .search-input:focus{border-color:var(--green-mid)}
+    .cases-list{display:flex;flex-direction:column;gap:10px}
+    .case-card{background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow .15s}
+    .case-card:hover{box-shadow:var(--shadow)}
+    .case-card.crisis-card{border-color:#fca5a5;border-left:3px solid var(--red)}
+    .case-card-top{display:flex;align-items:center;gap:16px;padding:16px 20px}
+    .urgency-bar{width:4px;border-radius:4px;align-self:stretch;flex-shrink:0;min-height:44px}
+    .urgency-bar.high{background:var(--red)}.urgency-bar.medium{background:var(--amber)}.urgency-bar.low{background:var(--green-lt)}
+    .case-main{flex:1;min-width:0}
+    .case-name{font-size:14px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+    .lang-tag{font-size:10px;background:var(--bg);border:1px solid var(--border);color:var(--muted);border-radius:4px;padding:1px 5px;font-weight:500;margin-left:4px;vertical-align:middle}
+    .case-summary{font-size:13px;color:var(--muted);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:480px}
+    .case-meta{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+    .tag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;background:var(--bg);border:1px solid var(--border);color:var(--muted);text-transform:capitalize}
+    .tag.need{background:#e8f5ff;color:#1a5c8a;border-color:#bfdbfe}
+    .tag.urgency-high{background:#fee2e2;color:#991b1b;border-color:#fecaca}
+    .tag.urgency-medium{background:#fef3c7;color:#92400e;border-color:#fde68a}
+    .tag.urgency-low{background:#d1fae5;color:#065f46;border-color:#6ee7b7}
+    .case-actions{display:flex;gap:8px;flex-shrink:0;align-items:center}
+    .status-sel{padding:6px 10px;border-radius:8px;border:1px solid var(--border);font-size:12px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);cursor:pointer}
+    .expand-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--border);font-size:12px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s}
+    .expand-btn:hover{background:var(--border)}
+    .case-time{font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0}
+    .case-detail{display:none;padding:0 20px 16px 40px;border-top:1px solid var(--border)}
+    .case-detail.open{display:block}
+    .referrals-mini{margin-top:14px;margin-bottom:12px}
+    .ref-mini-title{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+    .ref-mini-list{display:flex;flex-direction:column;gap:5px}
+    .ref-mini-item{font-size:12.5px;color:var(--text);background:var(--bg);border-radius:8px;padding:7px 12px;border:1px solid var(--border);line-height:1.4}
+    .notes-section{margin-top:12px}
+    .notes-title{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+    .note-item{font-size:12.5px;color:var(--text);background:var(--bg);border-radius:8px;padding:8px 12px;border:1px solid var(--border);margin-bottom:6px;line-height:1.5}
+    .note-meta{font-size:11px;color:var(--muted);margin-top:3px}
+    .note-input-row{display:flex;gap:8px;margin-top:8px}
+    .note-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--cream);outline:none}
+    .note-input:focus{border-color:var(--green-mid)}
+    .note-add-btn{padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;white-space:nowrap}
+    .note-add-btn:hover{background:var(--green-mid)}
+    #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green);color:#fff;padding:10px 22px;border-radius:24px;font-size:13.5px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:999;white-space:nowrap}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .empty-state{text-align:center;padding:52px 20px;color:var(--muted)}
+    .empty-state .empty-icon{font-size:38px;margin-bottom:12px}
+    .empty-state p{font-size:14px}
+    @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){.sidebar{display:none}.main{margin-left:0}}
   </style>
 </head>
 <body>
-
 <aside class="sidebar">
   <div class="logo-wrap">
     <div class="logo-icon">
@@ -162,15 +115,18 @@
     </div>
     <div class="logo-name">Community<em>Voice</em></div>
   </div>
-  <div class="nav-label">Menu</div>
+  <div class="nav-label">Staff Menu</div>
   <nav>
     <a href="/"><span class="icon">💬</span> AI Assistant <span class="nav-dot"></span></a>
     <a href="/dashboard" class="active"><span class="icon">📋</span> Case Dashboard <span class="nav-dot"></span></a>
     <a href="/analytics"><span class="icon">📊</span> Analytics <span class="nav-dot"></span></a>
     <a href="/resources"><span class="icon">📦</span> Resources <span class="nav-dot"></span></a>
+    <a href="/impact"><span class="icon">🌍</span> Impact <span class="nav-dot"></span></a>
+    <a href="/network"><span class="icon">🤝</span> Resource Network <span class="nav-dot"></span></a>
   </nav>
   <div class="sidebar-bottom">
-    <a href="/" class="new-btn">+ New Intake</a>
+    <a href="/" class="new-btn" target="_blank">↗ Open Intake Portal</a>
+    <a href="/staff/logout" style="display:block;text-align:center;padding:8px;font-size:12.5px;color:var(--muted);text-decoration:none;border-radius:8px;border:1px solid var(--border)">Sign out</a>
     <div class="status-pill"><span class="status-dot"></span> System online</div>
   </div>
 </aside>
@@ -184,250 +140,56 @@
     <div class="topbar-right">
       <span style="font-size:11px;color:var(--muted);background:var(--bg);padding:4px 10px;border-radius:20px;border:1px solid var(--border)">Auto-refresh 30s</span>
       <button class="topbar-btn" onclick="loadCases()">↻ Refresh</button>
-      <a href="/staff/logout" class="topbar-btn" style="text-decoration:none">Sign out</a>
-      <div class="avatar-btn">CV</div>
+      <a href="/staff/logout" class="topbar-btn">Sign out</a>
     </div>
   </div>
 
   <div class="content-area">
-    <div class="dashboard-wrap">
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-header"><div class="stat-icon green">📊</div><span class="stat-trend">All time</span></div>
-          <div class="stat-val" id="s-total">—</div><div class="stat-label">Total Cases</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-header"><div class="stat-icon red">🔴</div><span class="stat-trend" style="color:#e84855">Urgent</span></div>
-          <div class="stat-val" id="s-high">—</div><div class="stat-label">High Urgency</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-header"><div class="stat-icon amber">📂</div><span class="stat-trend" style="color:#f5a623">Active</span></div>
-          <div class="stat-val" id="s-open">—</div><div class="stat-label">Open Cases</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-header"><div class="stat-icon green">✅</div><span class="stat-trend">Done</span></div>
-          <div class="stat-val" id="s-done">—</div><div class="stat-label">Resolved</div>
-        </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header"><div class="stat-icon green">📊</div><span class="stat-trend">All time</span></div>
+        <div class="stat-val" id="s-total">—</div><div class="stat-label">Total Cases</div>
       </div>
-
-      <div>
-        <div class="section-hd">
-          <div class="section-title">Recent Cases</div>
-          <button class="section-action" onclick="loadCases()">Refresh →</button>
-        </div>
-        <div class="filters-row">
-          <button class="filt-btn active" onclick="setFilter('all',this)">All</button>
-          <button class="filt-btn" onclick="setFilter('new',this)">New</button>
-          <button class="filt-btn" onclick="setFilter('in_progress',this)">In Progress</button>
-          <button class="filt-btn" onclick="setFilter('resolved',this)">Resolved</button>
-          <button class="filt-btn" onclick="setFilter('high',this)">⚡ High Urgency</button>
-          <input class="search-input" type="text" placeholder="🔍 Search cases…" id="search">
-        </div>
-        <div class="cases-list" id="cases">
-          <div style="text-align:center;padding:40px;color:var(--muted)">Loading cases…</div>
-        </div>
+      <div class="stat-card">
+        <div class="stat-header"><div class="stat-icon red">🔴</div><span class="stat-trend" style="color:var(--red)">Urgent</span></div>
+        <div class="stat-val" id="s-high">—</div><div class="stat-label">High Urgency</div>
       </div>
+      <div class="stat-card">
+        <div class="stat-header"><div class="stat-icon amber">📂</div></div>
+        <div class="stat-val" id="s-open">—</div><div class="stat-label">Open Cases</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header"><div class="stat-icon green">✅</div></div>
+        <div class="stat-val" id="s-done">—</div><div class="stat-label">Resolved</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-header"><div class="stat-icon green">✦</div><span class="stat-trend" style="color:var(--green-mid)">AI engine</span></div>
+        <div class="stat-val" id="s-auto">—</div><div class="stat-label">Auto-Resolved by AI</div>
+      </div>
+    </div>
 
+    <div class="section-hd">
+      <div class="section-title">Cases</div>
+      <button style="font-size:12.5px;color:var(--green-mid);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;font-weight:500" onclick="loadCases()">Refresh →</button>
+    </div>
+    <div class="filters-row">
+      <button class="filt-btn active"  onclick="setFilter('all',this)">All</button>
+      <button class="filt-btn"         onclick="setFilter('new',this)">New</button>
+      <button class="filt-btn"         onclick="setFilter('in_progress',this)">In Progress</button>
+      <button class="filt-btn"         onclick="setFilter('resolved',this)">Resolved</button>
+      <button class="filt-btn"         onclick="setFilter('auto_resolved',this)">✦ Auto-Resolved</button>
+      <button class="filt-btn"         onclick="setFilter('high',this)">⚡ High Urgency</button>
+      <button class="filt-btn crisis-btn" onclick="setFilter('crisis',this)">🆘 Crisis</button>
+      <button class="filt-btn review-btn" onclick="setFilter('needs_review',this)">👎 Needs Review</button>
+      <input class="search-input" type="text" placeholder="🔍 Search cases…" id="search">
+    </div>
+    <div class="cases-list" id="cases">
+      <div style="text-align:center;padding:40px;color:var(--muted)">Loading cases…</div>
     </div>
   </div>
 </div>
 
 <div id="toast"></div>
-
-<script>
-  let allCases = [];
-  let currentFilter = 'all';
-  let refreshTimer = null;
-
-  function showToast(msg, dur=2800) {
-    const t = document.getElementById('toast');
-    if (!t) return;
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), dur);
-  }
-
-  async function loadCases() {
-    try {
-      const res = await fetch('/api/cases');
-      if (res.status === 401) { window.location.href = '/staff/login'; return; }
-      allCases = await res.json();
-      renderStats(allCases);
-      renderCases();
-      clearTimeout(refreshTimer);
-      refreshTimer = setTimeout(loadCases, 30000);
-    } catch(e) { console.error('loadCases error:', e); }
-  }
-
-  function setFilter(f, el) {
-    currentFilter = f;
-    document.querySelectorAll('.filt-btn').forEach(b => b.classList.remove('active'));
-    if (el) el.classList.add('active');
-    renderCases();
-  }
-
-  function renderStats(cases) {
-    const set = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
-    set('s-total', cases.length);
-    set('s-high',  cases.filter(c=>c.urgency==='high').length);
-    set('s-open',  cases.filter(c=>c.status!=='resolved').length);
-    set('s-done',  cases.filter(c=>c.status==='resolved').length);
-  }
-
-  function renderCases() {
-    const container = document.getElementById('cases');
-    if (!container) return;
-    const search = (document.getElementById('search')?.value||'').toLowerCase();
-    let filtered = allCases.filter(c => {
-      if (currentFilter==='high') return c.urgency==='high';
-      if (['new','in_progress','resolved'].includes(currentFilter)) return c.status===currentFilter;
-      return true;
-    });
-    if (search) filtered = filtered.filter(c =>
-      (c.name||'').toLowerCase().includes(search) ||
-      (c.summary||'').toLowerCase().includes(search) ||
-      (c.need_type||'').toLowerCase().includes(search)
-    );
-    if (!filtered.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>No cases found</p></div>`;
-      return;
-    }
-    container.innerHTML = filtered.map(buildCaseCard).join('');
-
-    container.querySelectorAll('.expand-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const detail = btn.closest('.case-card').querySelector('.case-detail');
-        const open = detail.classList.toggle('open');
-        btn.textContent = open ? '▲ Less' : '▼ Details';
-      });
-    });
-    container.querySelectorAll('.status-sel').forEach(sel =>
-      sel.addEventListener('change', () => updateStatus(sel.dataset.id, sel.value))
-    );
-    container.querySelectorAll('.note-add-btn').forEach(btn =>
-      btn.addEventListener('click', () => {
-        const inp = document.getElementById(`note-input-${btn.dataset.id}`);
-        if (inp) addNote(btn.dataset.id, inp);
-      })
-    );
-  }
-
-  const LANG_LABELS = {en:'EN',es:'ES',fr:'FR',zh:'ZH',ar:'AR'};
-
-  function buildCaseCard(c) {
-    const ts = c.timestamp ? new Date(c.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '—';
-    const urgency = c.urgency||'low';
-    const status  = c.status||'new';
-    const statusLabel = {new:'New',in_progress:'In Progress',resolved:'Resolved',auto_resolved:'✦ Auto-Resolved'}[status]||status;
-    const lang = LANG_LABELS[c.language]||'';
-
-    let refHtml = '';
-    if (c.referrals && c.referrals.length) {
-      refHtml = `<div class="referrals-mini">
-        <div class="ref-mini-title">📋 AI-suggested referrals</div>
-        <div class="ref-mini-list">
-          ${c.referrals.map(r=>`<div class="ref-mini-item"><strong>${esc(r.type)}:</strong> ${esc(r.description)}</div>`).join('')}
-        </div>
-      </div>`;
-    }
-
-    const notes = c.notes||[];
-    const notesHtml = notes.length
-      ? notes.map(n=>`<div class="note-item">${esc(n.text)}<div class="note-meta">${n.author||'Staff'} · ${n.timestamp?new Date(n.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</div></div>`).join('')
-      : `<div style="font-size:12.5px;color:var(--muted);margin-bottom:8px">No notes yet</div>`;
-
-    const sbg = {new:'#eff6ff',in_progress:'#fef3c7',resolved:'#d1fae5',auto_resolved:'#f0fdf4'}[status]||'#f0ede8';
-    const sbo = {new:'#bfdbfe',in_progress:'#fde68a',resolved:'#6ee7b7',auto_resolved:'#86efac'}[status]||'#e5e0d5';
-    const sco = {new:'#1e40af',in_progress:'#92400e',resolved:'#065f46',auto_resolved:'#14532d'}[status]||'#8a8585';
-
-    return `<div class="case-card">
-      <div class="case-card-top">
-        <div class="urgency-bar ${urgency}"></div>
-        <div class="case-main">
-          <div class="case-name">${esc(c.name||'Anonymous')}${lang?`<span class="lang-tag">${lang}</span>`:''}</div>
-          <div class="case-summary">${esc(c.summary||'—')}</div>
-          <div class="case-meta">
-            <span class="tag need">${esc((c.need_type||'other').replace(/_/g,' '))}</span>
-            <span class="tag urgency-${urgency}">${urgency} urgency</span>
-            ${c.follow_up_needed?'<span class="tag" style="background:#fef3c7;border-color:#fde68a;color:#92400e">Follow-up needed</span>':''}
-            <span class="tag" style="background:${sbg};border-color:${sbo};color:${sco}">${statusLabel}</span>
-          </div>
-        </div>
-        <div class="case-actions">
-          <select class="status-sel" data-id="${c.id}">
-            <option value="new" ${status==='new'?'selected':''}>New</option>
-            <option value="in_progress" ${status==='in_progress'?'selected':''}>In Progress</option>
-            <option value="resolved" ${status==='resolved'?'selected':''}>Resolved</option>
-            <option value="auto_resolved" ${status==='auto_resolved'?'selected':''}>✦ Auto-Resolved</option>
-          </select>
-          <button class="expand-btn">▼ Details</button>
-        </div>
-        <div class="case-time">${ts}</div>
-      </div>
-      <div class="case-detail">
-        ${c.auto_resolved && c.resolution_summary ? `<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 16px;margin-top:14px;font-size:13px;color:#14532d"><strong>✦ Auto-resolved:</strong> ${esc(c.resolution_summary)}</div>` : ''}
-        ${refHtml}
-        <div class="notes-section">
-          <div class="notes-title">📝 Staff notes</div>
-          <div id="notes-list-${c.id}">${notesHtml}</div>
-          <div class="note-input-row">
-            <input class="note-input" id="note-input-${c.id}" type="text" placeholder="Add a note…">
-            <button class="note-add-btn" data-id="${c.id}">Add</button>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  }
-
-  async function updateStatus(id, status) {
-    try {
-      await fetch(`/api/cases/${id}/status`, {
-        method:'PATCH', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({status})
-      });
-      const c = allCases.find(x=>x.id===id);
-      if (c) c.status = status;
-      renderStats(allCases);
-      showToast(`Status → ${status.replace('_',' ')}`);
-    } catch { showToast('Failed to update status'); }
-  }
-
-  async function addNote(caseId, inputEl) {
-    const note = inputEl.value.trim();
-    if (!note) return;
-    inputEl.disabled = true;
-    try {
-      const res = await fetch(`/api/cases/${caseId}/notes`, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({note})
-      });
-      const data = await res.json();
-      if (data.success) {
-        const c = allCases.find(x=>x.id===caseId);
-        if (c) { if(!c.notes) c.notes=[]; c.notes.push(data.note); }
-        const nl = document.getElementById(`notes-list-${caseId}`);
-        if (nl) {
-          const n = data.note;
-          const d = document.createElement('div');
-          d.className = 'note-item';
-          d.innerHTML = `${esc(n.text)}<div class="note-meta">${n.author} · ${new Date(n.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</div>`;
-          nl.appendChild(d);
-        }
-        inputEl.value = '';
-        showToast('Note added');
-      }
-    } catch { showToast('Failed to add note'); }
-    inputEl.disabled = false;
-  }
-
-  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    loadCases();
-    const s = document.getElementById('search');
-    if (s) s.addEventListener('input', renderCases);
-  });
-</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CommunityVoice — Get Help Today</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--green:#1b4332;--green-mid:#2d6a4f;--green-lt:#52b788;--cream:#faf8f3;--bg:#f5f0e8;--border:#e2d9c8;--text:#1a1612;--muted:#7a6f62}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+
+    /* Header */
+    header{padding:18px 32px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--green);display:flex;align-items:center;gap:8px;text-decoration:none}
+    .logo-dot{width:8px;height:8px;background:var(--green-lt);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+    .staff-btn{font-size:.8rem;color:var(--muted);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:var(--cream);transition:all .15s}
+    .staff-btn:hover{background:var(--border)}
+
+    /* Hero */
+    .hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px 60px;max-width:600px;margin:0 auto;width:100%}
+    .eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green-lt);margin-bottom:16px}
+    .hero h1{font-family:'DM Serif Display',serif;font-size:3rem;color:var(--green);line-height:1.15;margin-bottom:18px}
+    .hero h1 em{font-style:italic;color:var(--green-mid)}
+    .hero p{font-size:1.05rem;color:var(--muted);line-height:1.7;margin-bottom:36px;max-width:420px}
+
+    /* CTA */
+    .cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--green);color:#fff;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;padding:16px 36px;border-radius:50px;text-decoration:none;transition:all .2s;box-shadow:0 4px 20px rgba(27,67,50,.25)}
+    .cta-btn:hover{background:var(--green-mid);transform:translateY(-2px);box-shadow:0 6px 28px rgba(27,67,50,.3)}
+    .cta-arrow{font-size:1.1rem;transition:transform .2s}
+    .cta-btn:hover .cta-arrow{transform:translateX(4px)}
+
+    .cta-note{margin-top:14px;font-size:.82rem;color:var(--muted)}
+
+    /* Trust chips */
+    .chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:40px}
+    .chip{font-size:.78rem;color:var(--muted);background:var(--cream);padding:6px 14px;border-radius:20px;border:1px solid var(--border);display:flex;align-items:center;gap:5px}
+
+    /* How it works */
+    .how{background:var(--cream);border-top:1px solid var(--border);padding:40px 24px}
+    .how-inner{max-width:560px;margin:0 auto;text-align:center}
+    .how h2{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--green);margin-bottom:24px}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .step{text-align:center}
+    .step-num{width:36px;height:36px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;margin:0 auto 10px}
+    .step-title{font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:4px}
+    .step-desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+
+    /* Footer */
+    footer{text-align:center;padding:16px;font-size:.74rem;color:var(--muted);border-top:1px solid var(--border)}
+    footer strong{color:var(--text)}
+
+    @media(max-width:480px){.hero h1{font-size:2.1rem}.steps{grid-template-columns:1fr}.chips{gap:7px}}
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">
+    <div class="logo-dot"></div>
+    CommunityVoice
+  </a>
+  <a href="/staff/login" class="staff-btn">Staff Portal →</a>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">Free · Confidential · 24/7</div>
+  <h1>Get the help<br>you <em>need</em>, today.</h1>
+  <p>Tell us what's going on. Our AI connects you with food, housing, mental health support and more — in minutes, not days.</p>
+
+  <a href="/chat" class="cta-btn">
+    Get Help Now <span class="cta-arrow">→</span>
+  </a>
+  <div class="cta-note">🔒 Private & reviewed by a real staff member</div>
+
+  <div class="chips">
+    <span class="chip">🥗 Food Assistance</span>
+    <span class="chip">🏠 Housing</span>
+    <span class="chip">🧠 Mental Health</span>
+    <span class="chip">💡 Utilities</span>
+    <span class="chip">💼 Jobs</span>
+    <span class="chip">🌍 5 Languages</span>
+  </div>
+</div>
+
+<div class="how">
+  <div class="how-inner">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Tell us your need</div>
+        <div class="step-desc">Chat with our AI in your language — no forms, no waiting on hold</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Get matched instantly</div>
+        <div class="step-desc">Resources are allocated automatically in under 90 seconds</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Staff follows up</div>
+        <div class="step-desc">A real person reviews your case and contacts you directly</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  CommunityVoice — GDG Solution Challenge 2026 &nbsp;|&nbsp; <strong>Crisis line: 988</strong> (call/text, free 24/7)
+</footer>
+
+</body>
+</html>
