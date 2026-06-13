@@ -1075,7 +1075,7 @@ def health():
                     "timestamp":datetime.utcnow().isoformat()})
 
 @app.route("/api/config/maps")
-@staff_required
+@api_staff_required
 def maps_config():
     """Safely expose Maps API key to authenticated staff only."""
     key = os.environ.get("MAPS_API_KEY", "")
