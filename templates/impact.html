@@ -87,12 +87,34 @@
     .pilot-body{font-size:13.5px;color:var(--muted);line-height:1.7}
     .pilot-badge{display:inline-block;background:#f0fdf4;border:1px solid #86efac;color:var(--green-mid);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;margin-top:10px}
 
+    /* ── Responsive ── */
+    .hamburger{display:none;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:var(--text);flex-direction:column;justify-content:center;gap:5px;flex-shrink:0}
+    .hamburger span{display:block;width:20px;height:2px;background:currentColor;border-radius:2px}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150}
+    .sidebar-overlay.show{display:block}
     @media(max-width:900px){.impact-hero-grid,.stat-grid,.how-grid{grid-template-columns:1fr 1fr}.safety-grid{grid-template-columns:1fr}}
-    @media(max-width:640px){.sidebar{display:none}.main{margin-left:0}}
+    @media(max-width:768px){
+      body{overflow:auto}
+      .sidebar{transform:translateX(-100%);transition:transform .25s ease;z-index:200}
+      .sidebar.open{transform:translateX(0)}
+      .main{margin-left:0}
+      .hamburger{display:flex}
+      .topbar{padding:12px 16px}
+      .content-area{padding:16px}
+      .breadcrumb{display:none}
+      .impact-hero-grid,.stat-grid,.how-grid{grid-template-columns:1fr 1fr}
+      .safety-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){
+      .impact-hero-grid,.stat-grid,.how-grid{grid-template-columns:1fr}
+      .topbar-right .topbar-btn{display:none}
+      .content-area{padding:12px}
+      .impact-hero-number,.stat-num{font-size:30px!important}
+    }
   </style>
 </head>
 <body>
-
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 <aside class="sidebar">
   <div class="logo-wrap">
     <div class="logo-icon">
@@ -122,6 +144,7 @@
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
+      <button class="hamburger" id="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
       <div class="page-title">Impact <em>Report</em></div>
       <div class="breadcrumb">Real-world outcomes · Responsible AI · Community reach</div>
     </div>
@@ -242,6 +265,9 @@
     } catch(e) { console.error('Impact load error:', e); }
   }
   document.addEventListener('DOMContentLoaded', loadImpact);
+</script>
+<script>
+(function(){var btn=document.getElementById('hamburger'),sb=document.querySelector('.sidebar'),ov=document.getElementById('sidebar-overlay');function t(){sb.classList.toggle('open');ov.classList.toggle('show');}if(btn)btn.addEventListener('click',t);if(ov)ov.addEventListener('click',t);})();
 </script>
 </body>
 </html>

@@ -133,12 +133,35 @@
     /* Map styles */
     #map { height: 420px; width: 100%; border-radius: 0 0 var(--radius) var(--radius); }
     .map-list-item { display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin-bottom:8px; }
-    @media (max-width: 900px) { .summary-row { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 640px) { .sidebar { display: none; } .main { margin-left: 0; } }
+    /* ── Responsive ── */
+    .hamburger{display:none;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:var(--text);flex-direction:column;justify-content:center;gap:5px;flex-shrink:0}
+    .hamburger span{display:block;width:20px;height:2px;background:currentColor;border-radius:2px}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150}
+    .sidebar-overlay.show{display:block}
+    @media(max-width:900px){.summary-row{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:768px){
+      body{overflow:auto}
+      .sidebar{transform:translateX(-100%);transition:transform .25s ease;z-index:200}
+      .sidebar.open{transform:translateX(0)}
+      .main{margin-left:0}
+      .hamburger{display:flex}
+      .topbar{padding:12px 16px}
+      .content-area{padding:16px}
+      .breadcrumb{display:none}
+      .summary-row{grid-template-columns:repeat(2,1fr)}
+      #map{height:300px}
+    }
+    @media(max-width:480px){
+      .summary-row{grid-template-columns:1fr}
+      .topbar-right .topbar-btn:not(.add-btn){display:none}
+      .content-area{padding:12px}
+      .sum-val{font-size:24px!important}
+      #map{height:240px}
+    }
   </style>
 </head>
 <body>
-
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 <aside class="sidebar">
   <div class="logo-wrap">
     <div class="logo-icon">
@@ -168,6 +191,7 @@
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
+      <button class="hamburger" id="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
       <div class="page-title">Resource <em>Manager</em></div>
       <div class="breadcrumb">Inventory · Appointments · Map · Allocation history</div>
     </div>
@@ -751,6 +775,9 @@
 
   document.querySelectorAll('.overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');});});
   document.addEventListener('DOMContentLoaded', loadAll);
+</script>
+<script>
+(function(){var btn=document.getElementById('hamburger'),sb=document.querySelector('.sidebar'),ov=document.getElementById('sidebar-overlay');function t(){sb.classList.toggle('open');ov.classList.toggle('show');}if(btn)btn.addEventListener('click',t);if(ov)ov.addEventListener('click',t);})();
 </script>
 </body>
 </html>

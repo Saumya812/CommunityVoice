@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: communityvoice
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: FIREBASE_CREDENTIALS_JSON
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: STAFF_USERNAME
+        value: staff
+      - key: STAFF_PASSWORD
+        sync: false
+      - key: PORT
+        value: 8080

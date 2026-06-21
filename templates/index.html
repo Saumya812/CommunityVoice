@@ -106,7 +106,24 @@
     .voice-status.show{display:flex}
     .voice-dot{width:7px;height:7px;background:var(--danger);border-radius:50%;animation:pulse-dot .9s infinite}
     footer{text-align:center;padding:12px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--border);margin-top:auto;background:var(--surface)}
-    @media(max-width:520px){.welcome{padding:18px}.welcome h1{font-size:1.5rem}.case-confirm-grid{grid-template-columns:1fr}}
+    @media(max-width:600px){
+      header{padding:0 14px;height:54px}
+      .logo{font-size:1.1rem}
+      .main{padding:12px 10px 0}
+      .welcome{padding:18px 16px}
+      .welcome h1{font-size:1.45rem}
+      .case-confirm-grid{grid-template-columns:1fr}
+      #chat-window{min-height:200px;max-height:calc(100dvh - 320px);padding:14px}
+      .bubble{max-width:92%}
+      .quick-row{gap:6px}
+      .quick-btn{padding:6px 10px;font-size:.79rem}
+      .input-area{padding:10px 0 14px;gap:6px}
+    }
+    @media(max-width:400px){
+      .welcome h1{font-size:1.25rem}
+      .welcome-chips{display:none}
+      #lang-select{display:none}
+    }
   </style>
 </head>
 <body>

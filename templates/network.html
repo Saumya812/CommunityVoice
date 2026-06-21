@@ -105,12 +105,35 @@
     #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green);color:#fff;padding:10px 22px;border-radius:24px;font-size:13.5px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:999}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+    /* ── Responsive ── */
+    .hamburger{display:none;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:var(--text);flex-direction:column;justify-content:center;gap:5px;flex-shrink:0}
+    .hamburger span{display:block;width:20px;height:2px;background:currentColor;border-radius:2px}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150}
+    .sidebar-overlay.show{display:block}
     @media(max-width:900px){.two-col{grid-template-columns:1fr}.net-stats{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:640px){.sidebar{display:none}.main{margin-left:0}}
+    @media(max-width:768px){
+      body{overflow:auto}
+      .sidebar{transform:translateX(-100%);transition:transform .25s ease;z-index:200}
+      .sidebar.open{transform:translateX(0)}
+      .main{margin-left:0}
+      .hamburger{display:flex}
+      .topbar{padding:12px 16px}
+      .content-area{padding:16px}
+      .breadcrumb{display:none}
+      .network-hero{flex-direction:column;gap:12px;align-items:flex-start}
+      .net-stats{grid-template-columns:repeat(2,1fr)}
+      .two-col{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){
+      .net-stats{grid-template-columns:1fr}
+      .topbar-right .topbar-btn{display:none}
+      .content-area{padding:12px}
+      .net-stat-num{font-size:28px!important}
+    }
   </style>
 </head>
 <body>
-
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 <aside class="sidebar">
   <div class="logo-wrap">
     <div class="logo-icon">
@@ -140,6 +163,7 @@
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
+      <button class="hamburger" id="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
       <div class="page-title">Resource <em>Network</em></div>
       <div class="breadcrumb">Cross-NGO coordination · Shared inventory · Live fulfillment</div>
     </div>
@@ -438,6 +462,9 @@
 
   // Load live data on page load
   document.addEventListener('DOMContentLoaded', loadNetworkData);
+</script>
+<script>
+(function(){var btn=document.getElementById('hamburger'),sb=document.querySelector('.sidebar'),ov=document.getElementById('sidebar-overlay');function t(){sb.classList.toggle('open');ov.classList.toggle('show');}if(btn)btn.addEventListener('click',t);if(ov)ov.addEventListener('click',t);})();
 </script>
 </body>
 </html>
