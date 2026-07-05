@@ -703,14 +703,24 @@ def chat():
         return jsonify({"error": "Too many requests. Please wait a moment."}), 429
 
     data         = request.json or {}
-    session_id   = data.get("session_id") or str(uuid.uuid4())
-    user_message = (data.get("message") or "").strip()
-    language     = data.get("language", "en")
+    session_id    = data.get("session_id") or str(uuid.uuid4())
+    user_message  = (data.get("message") or "").strip()
+    incoming_lang = data.get("language", "en")
     if not user_message:
         return jsonify({"error": "Empty message"}), 400
 
     if session_id not in chat_sessions:
-        chat_sessions[session_id] = {"history": [], "language": language}
+        chat_sessions[session_id] = {"history": [], "language": incoming_lang}
+        language = incoming_lang
+    else:
+        stored_lang = chat_sessions[session_id].get("language", "en")
+        if stored_lang != "en":
+            language = stored_lang                          # locked — ignore frontend
+        elif incoming_lang != "en":
+            language = incoming_lang
+            chat_sessions[session_id]["language"] = language  # lock on first detection
+        else:
+            language = "en"
     history = chat_sessions[session_id]["history"]
 
     is_crisis_msg = detect_crisis(user_message)
